@@ -1,7 +1,7 @@
 {
   "name": "react-native-arcgis-mapview",
-  "version": "1.0.0",
-  "description": "## Getting started",
+  "version": "1.0.1",
+  "description": "A Basic ArcGIS port for React Native.",
   "main": "AGSMapView.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
