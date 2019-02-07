@@ -1,6 +1,7 @@
 
 package com.davidgalindo.rnarcgismapview;
 
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -25,5 +26,9 @@ public class RNArcGISMapViewPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
       return Arrays.<ViewManager>asList(new RNArcGISMapViewManager());
+    }
+
+    public static void setLicenseKey(String licenseKey) {
+        ArcGISRuntimeEnvironment.setLicense(licenseKey);
     }
 }
