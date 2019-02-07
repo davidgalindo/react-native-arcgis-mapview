@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FAC2B85A220B786C00975962 /* RNAGSGraphicsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2B855220B786C00975962 /* RNAGSGraphicsOverlay.swift */; };
-		FAC2B85B220B786C00975962 /* RNArcGISMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2B856220B786C00975962 /* RNArcGISMapView.swift */; };
-		FAC2B85C220B786C00975962 /* RNArcGISMapViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2B858220B786C00975962 /* RNArcGISMapViewManager.swift */; };
-		FAC2B85D220B786C00975962 /* RNArcGISMapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC2B859220B786C00975962 /* RNArcGISMapViewManager.m */; };
+		FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */; };
+		FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */; };
+		FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */; };
+		FAACB6ED220CC03900B7F583 /* RNArcGISMapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,12 +26,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		134814201AA4EA6300B7C361 /* libRNArcGISMapView.temp_caseinsensitive_rename.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNArcGISMapView.temp_caseinsensitive_rename.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FAC2B853220B786500975962 /* RNArcGISMapView-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNArcGISMapView-Bridging-Header.h"; sourceTree = "<group>"; };
-		FAC2B855220B786C00975962 /* RNAGSGraphicsOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSGraphicsOverlay.swift; sourceTree = "<group>"; };
-		FAC2B856220B786C00975962 /* RNArcGISMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapView.swift; sourceTree = "<group>"; };
-		FAC2B858220B786C00975962 /* RNArcGISMapViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewManager.swift; sourceTree = "<group>"; };
-		FAC2B859220B786C00975962 /* RNArcGISMapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNArcGISMapViewManager.m; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libRNArcGISMapView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNArcGISMapView.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Project-Umbrella-Header.h"; sourceTree = "<group>"; };
+		FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSGraphicsOverlay.swift; sourceTree = "<group>"; };
+		FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapView.swift; sourceTree = "<group>"; };
+		FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewManager.swift; sourceTree = "<group>"; };
+		FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNArcGISMapViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +48,7 @@
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				134814201AA4EA6300B7C361 /* libRNArcGISMapView.temp_caseinsensitive_rename.a */,
+				134814201AA4EA6300B7C361 /* libRNArcGISMapView.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -56,27 +56,27 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				FAC2B854220B786C00975962 /* src */,
-				FAC2B853220B786500975962 /* RNArcGISMapView-Bridging-Header.h */,
+				FAACB6E4220CC03900B7F583 /* src */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		FAC2B854220B786C00975962 /* src */ = {
+		FAACB6E4220CC03900B7F583 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FAC2B855220B786C00975962 /* RNAGSGraphicsOverlay.swift */,
-				FAC2B856220B786C00975962 /* RNArcGISMapView.swift */,
-				FAC2B857220B786C00975962 /* RNArcGISMapViewManager */,
+				FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */,
+				FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */,
+				FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */,
+				FAACB6E7220CC03900B7F583 /* RNArcGISMapViewManager */,
 			);
 			path = src;
 			sourceTree = "<group>";
 		};
-		FAC2B857220B786C00975962 /* RNArcGISMapViewManager */ = {
+		FAACB6E7220CC03900B7F583 /* RNArcGISMapViewManager */ = {
 			isa = PBXGroup;
 			children = (
-				FAC2B858220B786C00975962 /* RNArcGISMapViewManager.swift */,
-				FAC2B859220B786C00975962 /* RNArcGISMapViewManager.m */,
+				FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */,
+				FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */,
 			);
 			path = RNArcGISMapViewManager;
 			sourceTree = "<group>";
@@ -98,7 +98,7 @@
 			);
 			name = RNArcGISMapView;
 			productName = RCTDataManager;
-			productReference = 134814201AA4EA6300B7C361 /* libRNArcGISMapView.temp_caseinsensitive_rename.a */;
+			productReference = 134814201AA4EA6300B7C361 /* libRNArcGISMapView.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -137,10 +137,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC2B85D220B786C00975962 /* RNArcGISMapViewManager.m in Sources */,
-				FAC2B85C220B786C00975962 /* RNArcGISMapViewManager.swift in Sources */,
-				FAC2B85B220B786C00975962 /* RNArcGISMapView.swift in Sources */,
-				FAC2B85A220B786C00975962 /* RNAGSGraphicsOverlay.swift in Sources */,
+				FAACB6ED220CC03900B7F583 /* RNArcGISMapViewManager.m in Sources */,
+				FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */,
+				FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */,
+				FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +188,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -224,6 +225,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 4.2;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -237,11 +239,13 @@
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RNArcGISMapView.temp_caseinsensitive_rename;
+				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "RNArcGISMapView-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -254,11 +258,13 @@
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = RNArcGISMapView.temp_caseinsensitive_rename;
+				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "RNArcGISMapView-Bridging-Header.h";
 			};
 			name = Release;
 		};
