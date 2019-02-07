@@ -102,6 +102,8 @@ import com.davidgalindo.rnarcgismapview.RNArcGISMapViewPackage;
 ##### iOS
 Add the following to your main.m:
 ```objc
+import <ArcGIS/ArcGIS.h>
+...
 int main() {
   ...
     NSError *error;
