@@ -4,9 +4,9 @@ A basic port of ArcGIS for React Native. Handles basemap URLs, map recentering, 
 
 # Installation Instructions
 ### Install the package and link it
-`yarn install react-native-arcgis-maps` or `npm install react-native-arcgis-maps`
+`yarn install react-native-arcgis-mapview` or `npm install react-native-arcgis-mapview`
 
-Then run `react-native link react-native-arcgis-maps`
+Then run `react-native link react-native-arcgis-mapview`
 
 ### Modify your Android native project
 First off, make sure your minSdk is 19 and your targetSdk is at least 28. ArcGIS requires a minimum SDK level of 19.
