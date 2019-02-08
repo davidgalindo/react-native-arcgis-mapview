@@ -1,6 +1,6 @@
 {
   "name": "react-native-arcgis-mapview",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Basic ArcGIS port for React Native.",
   "main": "AGSMapView.js",
   "scripts": {
