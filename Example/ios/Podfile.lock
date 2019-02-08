@@ -79,7 +79,7 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
-  - RNArcGISMapView (from `../node_modules/react-native-arcgis-mapview/`)
+  - RNArcGISMapView (from `../node_modules/react-native-arcgis-mapview`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
 SPEC REPOS:
@@ -97,7 +97,7 @@ EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
   RNArcGISMapView:
-    :path: "../node_modules/react-native-arcgis-mapview/"
+    :path: "../node_modules/react-native-arcgis-mapview"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
 
@@ -111,6 +111,6 @@ SPEC CHECKSUMS:
   RNArcGISMapView: f8c12ccc2ec93b506805cf76c37ccafdc452a5f9
   yoga: 0885622311729a02c2bc02dca97167787a51488b
 
-PODFILE CHECKSUM: 6ab041a815a4f250848508927472711d7acef86e
+PODFILE CHECKSUM: 8bab744975494ec4f93eac41b7210b33b44b014a
 
 COCOAPODS: 1.5.3

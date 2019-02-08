@@ -34,7 +34,8 @@ target 'Example' do
   #pod 'GLog', :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec"
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
   pod 'ArcGIS-Runtime-SDK-iOS', '100.4'
-  pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/"
+
+  pod 'RNArcGISMapView', :path => '../node_modules/react-native-arcgis-mapview'
 
 end
 
