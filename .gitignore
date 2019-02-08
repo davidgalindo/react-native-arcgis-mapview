@@ -12,6 +12,7 @@ yarn-error.log
 
 # Xcode
 #
+ios/pods
 build/
 *.pbxuser
 !default.pbxuser
