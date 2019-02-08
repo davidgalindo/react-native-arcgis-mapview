@@ -3,20 +3,20 @@
 A basic port of ArcGIS for React Native. Handles basemap URLs, map recentering, Callout views (iOS only for now), drawing/moving/updating graphics onto the map, and single tap listeners.
 
 # Table of Contents
-* [Installation Instructions](#install)
-  * [React](#install_react)
-  * [Android](#install_android)
-  * [iOS](#install_ios)
-  * [License your map](#install_license)
-* [Props, Callbacks, and Method Calls](#propscallbacksmethods)
+* [Installation Instructions](#installation-instructions)
+  * [React](#install-the-package-and-link-it)
+  * [Android](#modify-your-android-native-project)
+  * [iOS](#modify-your-ios-native-project)
+  * [License your map](#license-your-map)
+* [Props, Callbacks, and Method Calls](#props-callbacks-and-method-calls)
   * [Props](#props)
-  * [Props In Depth](#propsindepth)
-    * [Basemap URL](#basemapUrl)
+  * [Props In Depth](#props-in-depth)
+    * [Basemap URL](#basemap-url)
     * [onSingleTap](#onSingleTap)
   * [Methods](#methods)
-    * [The Point Object](#pointobject)
-    * [The Image Object](#imageobject)
-    * [Example Overlay Object](#exoverlayobject)
+    * [The Point Object](#the-point-object)
+    * [The Image Object](#the-image-object)
+    * [Example Overlay Object](#example-overlay-object)
 * [License](#license)
 
 # Installation Instructions
