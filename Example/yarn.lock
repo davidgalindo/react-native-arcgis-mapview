@@ -4531,10 +4531,10 @@ react-is@^16.6.3:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.1.tgz#a80141e246eb894824fb4f2901c0c50ef31d4cdb"
   integrity sha512-ioMCzVDWvCvKD8eeT+iukyWrBGrA3DiFYkXfBsVYIRdaREZuBjENG+KjrikavCLasozqRWTwFUagU/O4vPpRMA==
 
-react-native-arcgis-mapview@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-arcgis-mapview/-/react-native-arcgis-mapview-1.0.1.tgz#bc2a323bc37ac794a567a78e9c2a59212c55b5fb"
-  integrity sha512-vr0yB9L4JMFlOzS60uYLnB75rC3Q2RTPqMI7Lc9uS5YTWey13M1jklqSqOvEKOCSWuFrvIFIcVTCZxlnGEXD6A==
+react-native-arcgis-mapview@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-arcgis-mapview/-/react-native-arcgis-mapview-1.0.2.tgz#8cd980eaa857170b4f1d666e13dcc9d67bc4c7f0"
+  integrity sha512-lBZJWoQNqQAJJRud54maZ2YzyK+VombSyZPxvzphAcDp4PzrP/qNOOOfu4GgeJngrx3YnPkZ1lBHO1atEUIt8A==
 
 react-native-timer@^1.3.4:
   version "1.3.4"
