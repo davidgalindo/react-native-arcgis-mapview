@@ -2,6 +2,21 @@
 # React Native ArcGIS MapView
 A basic port of ArcGIS for React Native. Handles basemap URLs, map recentering, Callout views (iOS only for now), drawing/moving/updating graphics onto the map, and single tap listeners.
 
+# Usage
+```javascript
+import AGSMapView from 'react-native-arcgis-mapview'
+...
+render() {
+ return(
+ ...
+        <ArcGISMapView ref={mapView => this.mapView = mapView}
+        // your props here
+        />
+ )
+}
+...
+```
+
 # Table of Contents
 * [Installation Instructions](#installation-instructions)
   * [React](#install-the-package-and-link-it)
@@ -82,7 +97,7 @@ target 'Example' do
   #pod 'GLog', :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec"
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
   pod 'ArcGIS-Runtime-SDK-iOS', '100.4'
-  pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/"
+  pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/ios"
 
 end
 
