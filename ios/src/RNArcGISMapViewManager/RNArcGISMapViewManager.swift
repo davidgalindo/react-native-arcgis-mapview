@@ -9,17 +9,17 @@
 import Foundation
 
 @objc(RNArcGISMapViewManager)
-class RNArcGISMapViewManager: RCTViewManager {
+public class RNArcGISMapViewManager: RCTViewManager {
   var agsMapView: RNArcGISMapView?
   
-  override func view() -> UIView! {
+  override public func view() -> UIView! {
     if (agsMapView == nil) {
       agsMapView = RNArcGISMapView()
     }
     return agsMapView!
   }
   
-  override class func requiresMainQueueSetup() -> Bool {
+  override public class func requiresMainQueueSetup() -> Bool {
     return true;
   }
   

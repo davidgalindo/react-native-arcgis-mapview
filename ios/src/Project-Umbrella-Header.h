@@ -6,7 +6,7 @@
 //  Copyright © 2019 David Galindo. All rights reserved.
 //
 
-#import "React/RCTBridgeModule.h"
+#import "RCTBridgeModule.h"
 #import "React/RCTViewManager.h"
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>

@@ -13,7 +13,7 @@
 import Foundation
 import ArcGIS
 
-class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
+public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
   var pointImageDictionary: [NSString: UIImage]
   let referenceId: NSString
   

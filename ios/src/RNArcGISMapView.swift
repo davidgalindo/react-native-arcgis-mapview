@@ -10,7 +10,7 @@ import UIKit
 import ArcGIS
 
 @objc(RNArcGISMapView)
-class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
+public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
 //  var graphicsOverlayDictionary: [NSString: AGSGraphicsOverlay] = [:]
   
   // MARK: Initializers and helper methods
