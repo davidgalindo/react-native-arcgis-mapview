@@ -4,7 +4,7 @@ A basic port of ArcGIS for React Native. Handles basemap URLs, map recentering, 
 
 # Usage
 ```javascript
-import AGSMapView from 'react-native-arcgis-mapview'
+import ArcGISMapView from 'react-native-arcgis-mapview'
 ...
 render() {
  return(
