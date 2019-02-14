@@ -78,6 +78,14 @@ class ArcGISMapView extends React.Component {
       [args]
     );
   }
+
+  routeGraphicsOverlay = (args) => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.routeGraphicsOverlayViaManager,
+      [args]
+    );
+  }
   
   // MARK: Render
   render () {
