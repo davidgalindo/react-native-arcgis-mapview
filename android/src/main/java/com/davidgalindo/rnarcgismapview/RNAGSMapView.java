@@ -1,7 +1,9 @@
 package com.davidgalindo.rnarcgismapview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +27,10 @@ import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.tasks.networkanalysis.Route;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -38,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class RNAGSMapView extends LinearLayout implements LifecycleEventListener {
     // MARK: Variables/Prop declarations
@@ -46,6 +53,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     String basemapUrl = "";
     Boolean recenterIfGraphicTapped = false;
     HashMap<String, RNAGSGraphicsOverlay> rnGraphicsOverlays = new HashMap<>();
+    GraphicsOverlay routeGraphicsOverlay;
+    RNAGSRouter router;
 
     // MARK: Initializers
     public RNAGSMapView(Context context) {
@@ -55,6 +64,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         if (context instanceof ReactContext) {
             ((ReactContext) context).addLifecycleEventListener(this);
         }
+        router = new RNAGSRouter(context.getApplicationContext());
         setUpMap();
     }
 
@@ -62,17 +72,17 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     public void setUpMap() {
         mapView.setMap(new ArcGISMap(Basemap.Type.STREETS_VECTOR, 34.057, -117.196, 17));
         mapView.setOnTouchListener(new OnSingleTouchListener(getContext(),mapView));
-        mapView.getMap().addDoneLoadingListener(new Runnable() {
-            @Override
-            public void run() {
-                ArcGISRuntimeException e = mapView.getMap().getLoadError();
-                Boolean success = e != null;
-                String errorMessage = !success ? "" : e.getMessage();
-                WritableMap map = Arguments.createMap();
-                map.putBoolean("success",success);
-                map.putString("errorMessage",errorMessage);
-                emitEvent("onMapDidLoad",map);
-            }
+        routeGraphicsOverlay = new GraphicsOverlay();
+        mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
+        mapView.getMap().addDoneLoadingListener(() -> {
+            ArcGISRuntimeException e = mapView.getMap().getLoadError();
+            Boolean success = e != null;
+            String errorMessage = !success ? "" : e.getMessage();
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("success",success);
+            map.putString("errorMessage",errorMessage);
+
+            emitEvent("onMapDidLoad",map);
         });
     }
 
@@ -159,7 +169,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         Callout callout = mapView.getCallout();
         View calloutContent = mapView.getCallout().getContent();
         if (calloutContent == null) {
-            calloutContent = inflate(getContext(),R.layout.rnags_callout_content, null);
+            calloutContent = inflate(getContext().getApplicationContext(),R.layout.rnags_callout_content, null);
         }
         // Set callout content
         ((TextView) calloutContent.findViewById(R.id.title)).setText(title);
@@ -251,6 +261,44 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         if (overlay != null && args.hasKey("referenceIds")) {
             overlay.removeGraphics(args.getArray("referenceIds"));
         }
+    }
+
+    // Routing
+    public void routeGraphicsOverlay(ReadableMap args) {
+        if (!args.hasKey("overlayReferenceId")) {
+            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
+            return;
+        }
+        String overlayReferenceId = args.getString("overlayReferenceId");
+        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
+        ArrayList<String> removeGraphics = new ArrayList<>();
+        if(args.hasKey("excludeGraphics")) {
+            ReadableArray rawArray = args.getArray("excludeGraphics");
+            for (Object item: rawArray.toArrayList()) {
+                removeGraphics.add(((String) item));
+            }
+        }
+        final String color;
+        if (args.hasKey("routeColor")) {
+            color = args.getString("routeColor");
+        } else {
+            color = "#FF0000";
+        }
+
+        assert overlay != null;
+        Route route = router.createRoute(overlay.getAGSGraphicsOverlay(),removeGraphics);
+        if (route == null) {
+            Log.w("Warning (AGS)", "No route result returned.");
+            return;
+        }
+        drawRoute(route, color);
+    }
+
+    private void drawRoute(Route route, String color) {
+        routeGraphicsOverlay.getGraphics().clear();
+        SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor(color),5);
+        Graphic routeGraphic = new Graphic(route.getRouteGeometry(),symbol);
+        routeGraphicsOverlay.getGraphics().add(routeGraphic);
     }
 
     // MARK: Event emitting

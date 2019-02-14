@@ -3,7 +3,7 @@
 //  SampleArcGIS
 //
 //  Created by David Galindo on 1/31/19.
-//  Copyright © 2019 Facebook. All rights reserved.
+//  Copyright © 2019 David Galindo. All rights reserved.
 //
 
 import Foundation
@@ -70,6 +70,13 @@ public class RNArcGISMapViewManager: RCTViewManager {
     DispatchQueue.main.async {
       let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
       component.updatePointsInGraphicsOverlay(args)
+    }
+  }
+  
+  @objc func routeGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+    DispatchQueue.main.async {
+      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+      component.routeGraphicsOverlay(args)
     }
   }
   
