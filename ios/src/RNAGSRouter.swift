@@ -16,10 +16,9 @@ public class RNAGSRouter {
   public static let shared = RNAGSRouter()
   // MARK: Properties
   private var parameters: AGSRouteParameters?
-  private let routeUrl = URL(string: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World")!
   private let routeTask: AGSRouteTask
   
-  private init() {
+  private init(routeUrl: NSString) {
     routeTask = AGSRouteTask(url: routeUrl)
     routeTask.defaultRouteParameters { [weak self](defaultParameters, error) in
       if let error = error {

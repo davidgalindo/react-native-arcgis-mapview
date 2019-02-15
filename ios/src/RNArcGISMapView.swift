@@ -13,7 +13,8 @@ import ArcGIS
 public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   // MARK: Properties
   var routeGraphicsOverlay = AGSGraphicsOverlay()
-  
+  var router: RNAGSRouter?
+
   // MARK: Initializers and helper methods
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
@@ -205,13 +206,17 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   }
   
   @objc func routeGraphicsOverlay(_ args: NSDictionary) {
+    guard let router = router else {
+      print ("RNAGSMapView - WARNING: No router was initialized. Perhaps no routeUrl was provided?")
+      return
+    }
     guard let name = args["overlayReferenceId"] as? NSString,  let overlay = getOverlay(byReferenceId: name) else {
       print("RNAGSMapView - WARNING: Invalid layer name entered. No overlay will be routed.")
       return
     }
     let excludeGraphics = args["excludeGraphics"] as? [NSString]
     let color = UIColor(hex: String(args["routeColor"] as? NSString ?? "#FF0000"))!
-    RNAGSRouter.shared.createRoute(withGraphicOverlay: overlay, excludeGraphics: excludeGraphics) { [weak self] (result, error) in
+    router.createRoute(withGraphicOverlay: overlay, excludeGraphics: excludeGraphics) { [weak self] (result, error) in
       if let error = error {
         print("RNAGSMapView - WARNING: Error while routing: \(error.localizedDescription)")
         return
@@ -271,6 +276,14 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
 
   @objc var recenterIfGraphicTapped: Bool = false
   
+    @objc var routeUrl: NSString? {
+    didSet {
+        if let routeUrl = routeUrl {
+            router = RNAGSRouter(routeUrl: routeUrl)
+        }
+    }
+  }
+
   @objc var initialMapCenter: NSArray? {
     didSet{
       var points = [AGSPoint]()
