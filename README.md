@@ -118,6 +118,8 @@ If you have Swift code within your project, that should be it.
 
 If not, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a briding header. **CHOOSE CREATE!!** Then clean, rebuild, and you should be good to go.
 
+Build issues? Make sure your iOS project targets iOS 11. Then clean and restart XCode. Clean again and try to build. Don't forget to run `react-native link react-native-arcgis-mapview`.
+
 ### License your map
 A license is not required to develop and test. However, to release your app, you must provide a license. See [here for iOS](https://developers.arcgis.com/ios/latest/swift/guide/license-your-app.htm) or [here for Android](https://developers.arcgis.com/android/latest/guide/license-your-app.htm) for more information on how to get a license.
 
