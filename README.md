@@ -32,6 +32,7 @@ render() {
     * [The Point Object](#the-point-object)
     * [The Image Object](#the-image-object)
     * [Example Overlay Object](#example-overlay-object)
+    * [Routing](#routing)
 * [License](#license)
 
 # Installation Instructions
@@ -156,6 +157,7 @@ Prop Name | Type | Description | Default
 initialMapCenter | Object Array | Specifies the initial center of the map. Objects within the array must have both a latitude and longitude values. Including a single point will center around that point, while including multiple points will center around a polygon containing those points. | `[{latitude: 36.244797, longitude: -94.148060}]`
 recenterIfGraphicTapped | Boolean | If true, the map will recenter if a graphic is tapped on. | false
 basemapUrl | String | A URL that links to an ArcGIS Online map with your style. A description on how to get this working can be found below. [Here's an example of one that works.](https://david-galindo.maps.arcgis.com/home/item.html?id=96b0b60f091d4b3983f23fab131e8a72) | ''
+routeUrl | String | A URL that refers to an ArcGIS routing service. See [routing](#routing) below for more information.
 onSingleTap | `(event) => {}` | A callback that runs whenever the map is clicked. See below for more information. | `(event) => {}`
 
 ### Props In Depth
@@ -192,6 +194,7 @@ removeGraphicsOverlay | overlayId: String | Removes the graphics overlay with th
 addPointsToOverlay | { overlayReferenceId: String, points: [Point] } | Adds points to the overlay with the given overlayReferenceId.
 removePointsFromOverlay | { overlayReferenceId: String, referenceIds: [String] } | Removes points from the overlay with the given overlayReferenceID. The reference ID array are the IDs of the points you wish to remove.
 updatePointsOnOverlay | { overlayReferenceId: String, updates: [Point] } | Updates points on a given overlay. All properties within an individual Point object are optional, though latitude and longitude must both be provided if you are updating either one.
+routeGraphicsOverlay | { overlayReferenceId: String, excludeGraphics: [String]?, routeColor: String? } | Routes a one-way route from all points within the overlay associated with the overlayReferenceId. You can exclude points by ID by placing their IDs inside the excludeGraphics array. See below for more info.
 ##### The Point Object
 Above, the Point object was referenced as 'Point.' The Point object is structured as follows:
 ```javascript
@@ -247,6 +250,13 @@ pointGraphics: [
   ]
 }
 ```
+
+##### Routing
+For routing to work, you must also pass in a routeUrl prop with a reference to a routing service. Check the [Choosing a routing data source](https://developers.arcgis.com/android/latest/guide/find-a-route.htm) section of this Esri Article for information on how to make one. 
+
+Once you have a routing URL, try calling `routeGraphicsOverlay` to see if your routing service has been configuired correctly. If it doesn't work, chances are your URL doesn't have the necessary permissions set. Make sure it has public access. Also, note that longer routes may take longer to generate. On Android, this hangs the UI Thread due to the drawing required; on iOS, it simply doesn't show until it's completely drawn out. Hopefully this will be optimized in a future update.
+
+The biggest gotcha, however, is that routing uses up [ArcGIS Online Credits](https://www.esri.com/en-us/arcgis/products/arcgis-online/pricing/credits). You are given 50 free credits a month; however, you must buy additional credits to continue routing. Make sure your ArcGIS Online account has sufficient credits before release.
 
 # License
 Library Copyright 2019 David Galindo
