@@ -12,6 +12,7 @@
 
 @interface RCT_EXTERN_MODULE(RNArcGISMapViewManager, RCTViewManager)
   RCT_EXPORT_VIEW_PROPERTY(basemapUrl, NSString)
+  RCT_EXPORT_VIEW_PROPERTY(routeUrl, NSString)
   RCT_EXPORT_VIEW_PROPERTY(initialMapCenter, NSArray)
   RCT_EXPORT_VIEW_PROPERTY(recenterIfGraphicTapped, BOOL)
   RCT_EXPORT_VIEW_PROPERTY(onSingleTap, RCTDirectEventBlock)
