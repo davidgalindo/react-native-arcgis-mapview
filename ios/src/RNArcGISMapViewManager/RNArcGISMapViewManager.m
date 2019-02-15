@@ -28,6 +28,8 @@
   RCT_EXTERN_METHOD(addPointsToOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
   RCT_EXTERN_METHOD(removePointsFromOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
   RCT_EXTERN_METHOD(updatePointsInGraphicsOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
+  RCT_EXTERN_METHOD(routeGraphicsOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
   RCT_EXTERN_METHOD(dispose:(nonnull NSNumber*) node)
+
 
 @end

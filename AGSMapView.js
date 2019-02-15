@@ -11,6 +11,7 @@ class ArcGISMapView extends React.Component {
     basemapUrl: PropTypes.string,
     initialMapCenter: PropTypes.arrayOf(PropTypes.object),
     onSingleTap: PropTypes.func,
+    routeUrl: PropTypes.string,
   };
 
   static defaultProps = {
@@ -18,8 +19,8 @@ class ArcGISMapView extends React.Component {
       {latitude: 36.244797, longitude: -94.148060}
     ],
     basemapUrl: '',
-    onSingleTap: (event) => { }
-
+    onSingleTap: (event) => { },
+    routeUrl: '',
   };
 
   // MARK: Exposed native methods
@@ -75,6 +76,14 @@ class ArcGISMapView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
       UIManager.getViewManagerConfig('RNArcGISMapView').Commands.removePointsFromOverlayViaManager,
+      [args]
+    );
+  }
+
+  routeGraphicsOverlay = (args) => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.routeGraphicsOverlayViaManager,
       [args]
     );
   }

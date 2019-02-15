@@ -1,5 +1,5 @@
 package com.davidgalindo.rnarcgismapview;
-
+import android.app.Activity;
 import android.support.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
@@ -20,7 +20,9 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     private final int ADD_POINTS_TO_OVERLAY = 5;
     private final int REMOVE_POINTS_FROM_OVERLAY = 6;
     private final int UPDATE_POINTS_IN_GRAPHICS_OVERLAY = 7;
-    private final int DISPOSE = 8;
+    private final int ROUTE_GRAPHICS_OVERLAY = 8;
+    private final int DISPOSE = 999;
+
 
     // MARK Initializing methods
     @Override
@@ -38,6 +40,13 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     public void setBasemapUrl(RNAGSMapView view, @Nullable String url) {
         if (url != null && !url.isEmpty()) {
             view.setBasemapUrl(url);
+        }
+    }
+
+    @ReactProp(name = "routeUrl")
+    public void setRouteUrl(RNAGSMapView view, @Nullable String url) {
+        if (url != null && !url.isEmpty()) {
+            view.setRouteUrl(url);
         }
     }
 
@@ -62,8 +71,9 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
                 "addPointsToOverlayViaManager",ADD_POINTS_TO_OVERLAY,
                 "removePointsFromOverlayViaManager", REMOVE_POINTS_FROM_OVERLAY,
                 "updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY
-                );
+        );
         // Ran out of space in the constructor lol
+        map.put("routeGraphicsOverlayViaManager",ROUTE_GRAPHICS_OVERLAY);
         map.put("dispose", DISPOSE);
         return map;
     }
@@ -80,6 +90,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
             case ADD_POINTS_TO_OVERLAY: mapView.addPointsToOverlay(args.getMap(0));return;
             case REMOVE_POINTS_FROM_OVERLAY: mapView.removePointsFromOverlay(args.getMap(0));return;
             case UPDATE_POINTS_IN_GRAPHICS_OVERLAY: mapView.updatePointsInGraphicsOverlay(args.getMap(0));return;
+            case ROUTE_GRAPHICS_OVERLAY: mapView.routeGraphicsOverlay(args.getMap(0));return;
             case DISPOSE: mapView.onHostDestroy();
         }
     }
