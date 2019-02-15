@@ -3,7 +3,7 @@
 //  SampleArcGIS
 //
 //  Created by David Galindo on 1/31/19.
-//  Copyright © 2019 Facebook. All rights reserved.
+//  Copyright © 2019 David Galindo. All rights reserved.
 //
 
 import UIKit
@@ -11,7 +11,8 @@ import ArcGIS
 
 @objc(RNArcGISMapView)
 public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
-//  var graphicsOverlayDictionary: [NSString: AGSGraphicsOverlay] = [:]
+  // MARK: Properties
+  var routeGraphicsOverlay = AGSGraphicsOverlay()
   
   // MARK: Initializers and helper methods
   required init?(coder aDecoder: NSCoder) {
@@ -36,21 +37,18 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
       }
     })
     self.touchDelegate = self
-    
+    self.graphicsOverlays.add(routeGraphicsOverlay)
   }
   
   // MARK: Native methods
   @objc func geoView(_ geoView: AGSGeoView, didTapAtScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
     self.callout.dismiss()
-    
-    
     if onSingleTap != nil {
       let latLongPoint = AGSGeometryEngine.projectGeometry(mapPoint, to: AGSSpatialReference.wgs84()) as! AGSPoint
       var reactResult: [AnyHashable: Any] = [
         "mapPoint": ["latitude" : latLongPoint.y, "longitude": latLongPoint.x],
         "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
       ]
-      
       self.identifyGraphicsOverlays(atScreenPoint: screenPoint, tolerance: 15, returnPopupsOnly: false) { [weak self] (result, error) in
         if let error = error {
           reactResult["success"] = false
@@ -58,13 +56,18 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         } else {
           reactResult["success"] = true
         }
-        if let closestGraphic = result?.first?.graphics.first, let referenceId = closestGraphic.attributes["referenceId"] as? NSString{
-          reactResult["graphicReferenceId"] = referenceId
-          if self?.recenterIfGraphicTapped ?? false {
-            self?.setViewpointCenter(mapPoint, completion: nil)
+        guard let result = result, !result.isEmpty else {
+          self?.onSingleTap!(reactResult)
+          return
+        }
+        for item in result {
+          if item.graphicsOverlay is RNAGSGraphicsOverlay, let closestGraphic = item.graphics.first, let referenceId = closestGraphic.attributes["referenceId"] as? NSString{
+            reactResult["graphicReferenceId"] = referenceId
+            if self?.recenterIfGraphicTapped ?? false {
+              self?.setViewpointCenter(mapPoint, completion: nil)
+            }
           }
         }
-
         self?.onSingleTap!(reactResult)
       }
     }
@@ -127,7 +130,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   }
   
   @objc func addPointsToGraphicsOverlay(_ args: NSDictionary) {
-    guard let name = args["overlayReferenceId"] as? NSString, let overlay = getOverlay(byReferenceId: args["overlayReferenceId"] as? NSString) else {
+    guard let name = args["overlayReferenceId"] as? NSString,  let overlay = getOverlay(byReferenceId: name) else {
       print("WARNING: Invalid layer name entered. No points will be added.")
       reportToOverlayDidLoadListener(referenceId: args["overlayReferenceId"] as? NSString ?? NSString(string:"unknown"), action: "add", success: false, errorMessage: "Invalid layer name entered.")
       return
@@ -177,7 +180,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   }
   
   @objc func updatePointsInGraphicsOverlay(_ args: NSDictionary) {
-    guard let overlay = getOverlay(byReferenceId: args["overlayReferenceId"] as? NSString) else {
+    guard let name = args["overlayReferenceId"] as? NSString,  let overlay = getOverlay(byReferenceId: name) else  {
       print("WARNING: Invalid layer name entered. No points will be modified.")
       reportToOverlayDidLoadListener(referenceId: args["overlayReferenceId"] as? NSString ?? NSString(string: "Unknown"), action: "update", success: false, errorMessage: "Invalid layer name entered.")
       return
@@ -191,13 +194,56 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   }
   
   @objc func removeGraphicsOverlay(_ name: NSString) {
-    guard let overlay = self.graphicsOverlays.first(where: {($0 as! RNAGSGraphicsOverlay).referenceId == name}) as? RNAGSGraphicsOverlay else {
+    guard let overlay = getOverlay(named: name) else {
       print("WARNING: Invalid layer name entered. No overlay will be removed.")
       return
     }
     self.graphicsOverlays.remove(overlay)
     if (onOverlayWasRemoved != nil) {
       onOverlayWasRemoved!([NSString(string: "referenceId"): name])
+    }
+  }
+  
+  @objc func routeGraphicsOverlay(_ args: NSDictionary) {
+    guard let name = args["overlayReferenceId"] as? NSString,  let overlay = getOverlay(byReferenceId: name) else {
+      print("RNAGSMapView - WARNING: Invalid layer name entered. No overlay will be routed.")
+      return
+    }
+    let excludeGraphics = args["excludeGraphics"] as? [NSString]
+    let color = UIColor(hex: String(args["routeColor"] as? NSString ?? "#FF0000"))!
+    RNAGSRouter.shared.createRoute(withGraphicOverlay: overlay, excludeGraphics: excludeGraphics) { [weak self] (result, error) in
+      if let error = error {
+        print("RNAGSMapView - WARNING: Error while routing: \(error.localizedDescription)")
+        return
+      }
+      guard let result = result else {
+        print("RNAGSMapView - WARNING: No result obtained.")
+        return
+      }
+      // TODO: Draw routes onto graphics overlay
+      print("RNAGSMapView - Route Completed")
+      let generatedRoute = result.routes[0]
+      self?.draw(route: generatedRoute, with: color)
+      
+      
+    }
+  }
+  
+  private func getOverlay(named name: NSString) -> RNAGSGraphicsOverlay?{
+    return self.graphicsOverlays.first(where: { (item) -> Bool in
+      guard let item = item as? RNAGSGraphicsOverlay else {
+        return false
+      }
+      return item.referenceId == name
+    }) as? RNAGSGraphicsOverlay
+  }
+  
+  private func draw(route: AGSRoute, with color: UIColor){
+    DispatchQueue.main.async {
+      self.routeGraphicsOverlay.graphics.removeAllObjects()
+      let routeSymbol = AGSSimpleLineSymbol(style: .solid, color: color, width: 5)
+      let routeGraphic = AGSGraphic(geometry: route.routeGeometry, symbol: routeSymbol, attributes: nil)
+      self.routeGraphicsOverlay.graphics.add(routeGraphic)
     }
   }
   
@@ -253,7 +299,13 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   // MARK: Misc.
   private func getOverlay(byReferenceId referenceId: NSString?) -> RNAGSGraphicsOverlay? {
     if let referenceId = referenceId {
-      return self.graphicsOverlays.first(where: {($0 as! RNAGSGraphicsOverlay).referenceId == referenceId}) as? RNAGSGraphicsOverlay
+      return self.graphicsOverlays.first(where: {
+        if $0 is RNAGSGraphicsOverlay {
+          return ($0 as! RNAGSGraphicsOverlay).referenceId == referenceId
+        } else {
+          return false
+        }
+      }) as? RNAGSGraphicsOverlay
     } else {
       return nil
     }

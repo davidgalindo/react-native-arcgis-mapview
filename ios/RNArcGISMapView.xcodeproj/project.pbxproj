@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA3A2BE222161819009360CB /* RNAGSUIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */; };
+		FA3A2BE322161819009360CB /* RNAGSRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A2BE122161819009360CB /* RNAGSRouter.swift */; };
 		FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */; };
 		FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */; };
 		FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */; };
@@ -28,6 +30,8 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNArcGISMapView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNArcGISMapView.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Project-Umbrella-Header.h"; sourceTree = "<group>"; };
+		FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSUIColorExtension.swift; sourceTree = "<group>"; };
+		FA3A2BE122161819009360CB /* RNAGSRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSRouter.swift; sourceTree = "<group>"; };
 		FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSGraphicsOverlay.swift; sourceTree = "<group>"; };
 		FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapView.swift; sourceTree = "<group>"; };
 		FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewManager.swift; sourceTree = "<group>"; };
@@ -64,6 +68,8 @@
 		FAACB6E4220CC03900B7F583 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FA3A2BE122161819009360CB /* RNAGSRouter.swift */,
+				FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */,
 				FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */,
 				FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */,
 				FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */,
@@ -139,8 +145,10 @@
 			files = (
 				FAACB6ED220CC03900B7F583 /* RNArcGISMapViewManager.m in Sources */,
 				FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */,
+				FA3A2BE322161819009360CB /* RNAGSRouter.swift in Sources */,
 				FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */,
 				FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */,
+				FA3A2BE222161819009360CB /* RNAGSUIColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,6 +243,7 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -248,12 +257,14 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)";
 			};
 			name = Debug;
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -267,6 +278,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)";
 			};
 			name = Release;
 		};

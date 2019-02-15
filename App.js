@@ -9,7 +9,7 @@
 
 import React, {Component} from 'react';
 import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import ArcGISMapView  from 'react-native-arcgis-mapview';
+import ArcGISMapView  from './src/AGSMapView';
 import * as Updater from './updateSample';
 
 export default class App extends Component {
@@ -40,13 +40,16 @@ export default class App extends Component {
         </TouchableOpacity>
         <View style={{flexDirection: 'row'}}> 
         <TouchableOpacity disabled={this.state.isOverlayVisible} onPress={this.onPointAddPress}> 
-          <Text style={styles.positiveButton}>Add points  </Text>
+          <Text style={styles.positiveButton}>Add  </Text>
         </TouchableOpacity>
         <TouchableOpacity disabled={this.state.isOverlayVisible} onPress={this.onPointRemovePress}> 
-          <Text style={styles.negativeButton}>  Remove points </Text>
+          <Text style={styles.negativeButton}>  Remove </Text>
         </TouchableOpacity>
         <TouchableOpacity disabled={this.state.isOverlayVisible} onPress={this.onPointUpdatePress}> 
-          <Text style={styles.triggerButton}>  Toggle moving point</Text>
+          <Text style={styles.triggerButton}>  Toggle movement</Text>
+        </TouchableOpacity>
+        <TouchableOpacity disabled={this.state.isOverlayVisible} onPress={this.onPointRoutePress}> 
+          <Text style={styles.routeButton}>  Route</Text>
         </TouchableOpacity>
         </View>
         <View style={{flexDirection: 'row'}}>
@@ -55,7 +58,7 @@ export default class App extends Component {
         <ArcGISMapView ref={mapView => this.mapView = mapView} style={{width: 360, height: 500}}
           initialMapCenter={[{latitude: 36.244797, longitude: -94.148060}]}
           recenterIfGraphicTapped={true}
-          // basemapUrl='https://scott-ferguson.maps.arcgis.com/home/item.html?id=0672d51a50a04f57ad2ceb93fe18fc69'
+          // basemapUrl='https://david-galindo.maps.arcgis.com/home/item.html?id=fc75f65db9504175b2fb0e87b66672e5'
           onSingleTap={this.onSingleTap}
       />
       <Text style={styles.tapTracker}> X: <Text style={{fontWeight: 'bold'}}>{this.state.lastX}</Text> Y: <Text style={{fontWeight: 'bold'}}>{this.state.lastY}</Text> Graphic ID: <Text style={{fontWeight: 'bold'}}>{this.state.graphicId}</Text> </Text>
@@ -148,6 +151,16 @@ export default class App extends Component {
     this.setState({updatesActive: !this.state.updatesActive});
   };
 
+  onPointRoutePress = () => {
+    if (this.mapView) {
+      this.mapView.routeGraphicsOverlay({
+        overlayReferenceId: 'graphicsOverlay',
+        excludeGraphics: ['movingImage'],
+        routeColor: '#f4b342'
+      });
+    } 
+  };
+
   onSingleTap = (event) =>{
     points = event.nativeEvent;
     if (!points.mapPoint) {
@@ -226,6 +239,10 @@ const styles = StyleSheet.create({
   },
   triggerButton: {
     color: '#36a5bc',
+    fontWeight: 'bold',
+  },
+  routeButton: {
+    color: '#f4b342',
     fontWeight: 'bold',
   },
   tapTracker: {

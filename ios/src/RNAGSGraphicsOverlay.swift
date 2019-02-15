@@ -3,7 +3,7 @@
 //  SampleArcGIS
 //
 //  Created by David Galindo on 1/31/19.
-//  Copyright © 2019 Facebook. All rights reserved.
+//  Copyright © 2019 David Galindo. All rights reserved.
 //  Bridge between React Native and ArcGIS to create feature layers.
 //  This helper class is for static, nonchanging data. It does not (yet)
 //  support adding or removing points.
