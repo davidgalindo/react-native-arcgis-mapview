@@ -243,6 +243,7 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -256,12 +257,14 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)";
 			};
 			name = Debug;
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -275,6 +278,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNArcGISMapView;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)";
 			};
 			name = Release;
 		};

@@ -43,6 +43,13 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
         }
     }
 
+    @ReactProp(name = "routeUrl")
+    public void setRouteUrl(RNAGSMapView view, @Nullable String url) {
+        if (url != null && !url.isEmpty()) {
+            view.setRouteUrl(url);
+        }
+    }
+
     @ReactProp(name = "initialMapCenter")
     public void setInitialMapCenter(RNAGSMapView view, @Nullable ReadableArray array) {
         view.setInitialMapCenter(array);

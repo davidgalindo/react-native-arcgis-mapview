@@ -51,6 +51,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     View rootView;
     public MapView mapView;
     String basemapUrl = "";
+    String routeUrl = "";
     Boolean recenterIfGraphicTapped = false;
     HashMap<String, RNAGSGraphicsOverlay> rnGraphicsOverlays = new HashMap<>();
     GraphicsOverlay routeGraphicsOverlay;
@@ -64,7 +65,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         if (context instanceof ReactContext) {
             ((ReactContext) context).addLifecycleEventListener(this);
         }
-        router = new RNAGSRouter(context.getApplicationContext());
         setUpMap();
     }
 
@@ -105,6 +105,11 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             }
         });
         basemap.loadAsync();
+    }
+
+    public void setRouteUrl(String url) {
+        routeUrl = url;
+        router = new RNAGSRouter(getContext().getApplicationContext(), routeUrl);
     }
 
     public void setRecenterIfGraphicTapped(boolean value) {
@@ -265,6 +270,10 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     // Routing
     public void routeGraphicsOverlay(ReadableMap args) {
+        if (router == null) {
+            Log.w("Warning (AGS)", "Router has not been initialized. Perhaps no route URL was provided? Route URL:" + routeUrl);
+            return;
+        }
         if (!args.hasKey("overlayReferenceId")) {
             Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
             return;
@@ -284,7 +293,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         } else {
             color = "#FF0000";
         }
-
         assert overlay != null;
         Route route = router.createRoute(overlay.getAGSGraphicsOverlay(),removeGraphics);
         if (route == null) {

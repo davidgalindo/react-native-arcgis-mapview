@@ -23,20 +23,16 @@ import java.util.List;
 public class RNAGSRouter {
     // MARK: Properties
     private RouteTask routeTask;
-    // TODO: Modify so user can generate a token insetad of using your own
-    private String routeUrl = "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World?token=QQg9AddP1EeyirFVqnfs_EzBDXJxX352qz1VMN1HVytTku5rOQBJP2106LCGptqSJ-vv7rnMApwqf358J8QB1gQTS7Z-RNUtHCcKoXxRkxdjGVJy8RVLSowxjiWviw0yx1Th1BumF5Un6FI2yhaQBVxKkbXSA0bOE1DGX_A7DCRynWGCsGK-L8z9ZJiD_wFuywKCX_qx5iIb3owsrc7Aqw..";
     private RouteParameters routeParameters;
 
-    public RNAGSRouter(Context context) {
+    public RNAGSRouter(Context context, String routeUrl) {
         routeTask = new RouteTask(context, routeUrl);
         routeTask.loadAsync();
-        routeParameters = new RouteParameters();
         routeTask.addDoneLoadingListener(() -> {
             ListenableFuture<RouteParameters> future = routeTask.createDefaultParametersAsync();
             future.addDoneListener(() -> {
                 try {
-                    RouteParameters result = future.get();
-                    routeParameters.setTravelMode(result.getTravelMode());
+                    routeParameters = future.get();
                     routeParameters.setOutputSpatialReference(SpatialReferences.getWgs84());
                 } catch (Exception e) {
                     Log.w("WARNING (AGS)", "Routing parameters failed to load. Perhaps the app has not received valid credentials?");
