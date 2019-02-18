@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   umbrella_header = "Project-Umbrella-Header.h"
   s.name         = "RNArcGISMapView"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "A basic port of ArcGIS for React Native."
   s.homepage     = "https://davidagalindo.com"
   s.description = "Created to utilize Esri's ArcGIS Mobile frameworks for basic tasks such as recentering and drawing graphics."
