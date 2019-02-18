@@ -10,7 +10,7 @@ import ArcGIS
 import Foundation
 
 @objc(RNAGSMapViewModule)
-public class RNAGSMapViewModule: NSObject{
+public class RNArcGISMapViewModule: NSObject{
     @objc func setLicenseKey(_ key: String) {
         do {
             try AGSArcGISRuntimeEnvironment.setLicenseKey("key")

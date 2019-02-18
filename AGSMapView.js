@@ -124,4 +124,9 @@ class ArcGISMapView extends React.Component {
   }
 }
 
+export const setLicenseKey = (string) => {
+  NativeModules.RNArcGISMapViewModule.setLicenseKey(string);
+};
+
+
 export default ArcGISMapView;

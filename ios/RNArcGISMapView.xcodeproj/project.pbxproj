@@ -13,6 +13,8 @@
 		FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */; };
 		FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */; };
 		FAACB6ED220CC03900B7F583 /* RNArcGISMapViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */; };
+		FAFEFE56221B3341006A37BF /* RNAGSMapViewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FAFEFE55221B3341006A37BF /* RNAGSMapViewModule.m */; };
+		FAFEFE58221B341D006A37BF /* RNArcGISMapViewModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFEFE57221B341D006A37BF /* RNArcGISMapViewModule.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +38,8 @@
 		FAACB6E6220CC03900B7F583 /* RNArcGISMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapView.swift; sourceTree = "<group>"; };
 		FAACB6E8220CC03900B7F583 /* RNArcGISMapViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewManager.swift; sourceTree = "<group>"; };
 		FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNArcGISMapViewManager.m; sourceTree = "<group>"; };
+		FAFEFE55221B3341006A37BF /* RNAGSMapViewModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNAGSMapViewModule.m; sourceTree = "<group>"; };
+		FAFEFE57221B341D006A37BF /* RNArcGISMapViewModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewModule.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,7 @@
 		FAACB6E4220CC03900B7F583 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FAFEFE54221B3325006A37BF /* RNAGSMapViewModule */,
 				FA3A2BE122161819009360CB /* RNAGSRouter.swift */,
 				FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */,
 				FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */,
@@ -85,6 +90,15 @@
 				FAACB6E9220CC03900B7F583 /* RNArcGISMapViewManager.m */,
 			);
 			path = RNArcGISMapViewManager;
+			sourceTree = "<group>";
+		};
+		FAFEFE54221B3325006A37BF /* RNAGSMapViewModule */ = {
+			isa = PBXGroup;
+			children = (
+				FAFEFE55221B3341006A37BF /* RNAGSMapViewModule.m */,
+				FAFEFE57221B341D006A37BF /* RNArcGISMapViewModule.swift */,
+			);
+			path = RNAGSMapViewModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,8 +159,10 @@
 			files = (
 				FAACB6ED220CC03900B7F583 /* RNArcGISMapViewManager.m in Sources */,
 				FAACB6EC220CC03900B7F583 /* RNArcGISMapViewManager.swift in Sources */,
+				FAFEFE56221B3341006A37BF /* RNAGSMapViewModule.m in Sources */,
 				FA3A2BE322161819009360CB /* RNAGSRouter.swift in Sources */,
 				FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */,
+				FAFEFE58221B341D006A37BF /* RNArcGISMapViewModule.swift in Sources */,
 				FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */,
 				FA3A2BE222161819009360CB /* RNAGSUIColorExtension.swift in Sources */,
 			);

@@ -2,6 +2,7 @@ package com.davidgalindo.rnarcgismapview;
 
 import android.view.View;
 
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -27,5 +28,10 @@ public class RNArcGISMapViewModule extends ReactContextBaseJavaModule {
                 callback.invoke(result);
             }
         });
+    }
+
+    @ReactMethod
+    public void setLicenseKey(String licenseKey) {
+        ArcGISRuntimeEnvironment.setLicense(licenseKey);
     }
 }
