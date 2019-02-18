@@ -1,8 +1,6 @@
 
 package com.davidgalindo.rnarcgismapview;
 
-import android.app.Activity;
-
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -17,7 +15,7 @@ import java.util.List;
 public class RNArcGISMapViewPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+        return Arrays.asList(new RNArcGISMapViewModule(reactContext));
     }
 
     // Deprecated from RN 0.47

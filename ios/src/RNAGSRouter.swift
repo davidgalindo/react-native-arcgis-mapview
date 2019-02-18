@@ -13,12 +13,11 @@ public class RNAGSRouter {
   /*
    The shared router object. Use this to perform all routing.
    **/
-  public static let shared = RNAGSRouter()
   // MARK: Properties
   private var parameters: AGSRouteParameters?
   private let routeTask: AGSRouteTask
   
-  private init(routeUrl: NSString) {
+  public init(routeUrl: URL) {
     routeTask = AGSRouteTask(url: routeUrl)
     routeTask.defaultRouteParameters { [weak self](defaultParameters, error) in
       if let error = error {

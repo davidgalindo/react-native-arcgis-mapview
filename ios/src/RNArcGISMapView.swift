@@ -73,6 +73,16 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
       }
     }
   }
+    
+    public func geoView(_ geoView: AGSGeoView, didTouchDragToScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
+        if let onMapMoved = onMapMoved {
+            let reactResult: [AnyHashable: Any] = [
+                "mapPoint" : ["latitude" : mapPoint.y, "longitude": mapPoint.x],
+                "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
+            ]
+            onMapMoved(reactResult)
+        }
+    }
   
   // MARK: Exposed RN Event Emitters
   @objc var onSingleTap: RCTDirectEventBlock?
@@ -80,7 +90,8 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   @objc var onOverlayWasModified: RCTDirectEventBlock?
   @objc var onOverlayWasAdded: RCTDirectEventBlock?
   @objc var onOverlayWasRemoved: RCTDirectEventBlock?
-  
+  @objc var onMapMoved: RCTDirectEventBlock?
+
   // MARK: Exposed RN methods
   @objc func showCallout(_ args: NSDictionary) {
     let point = args["point"] as? NSDictionary
@@ -229,29 +240,17 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
       print("RNAGSMapView - Route Completed")
       let generatedRoute = result.routes[0]
       self?.draw(route: generatedRoute, with: color)
-      
-      
     }
   }
   
-  private func getOverlay(named name: NSString) -> RNAGSGraphicsOverlay?{
-    return self.graphicsOverlays.first(where: { (item) -> Bool in
-      guard let item = item as? RNAGSGraphicsOverlay else {
-        return false
-      }
-      return item.referenceId == name
-    }) as? RNAGSGraphicsOverlay
-  }
-  
-  private func draw(route: AGSRoute, with color: UIColor){
-    DispatchQueue.main.async {
-      self.routeGraphicsOverlay.graphics.removeAllObjects()
-      let routeSymbol = AGSSimpleLineSymbol(style: .solid, color: color, width: 5)
-      let routeGraphic = AGSGraphic(geometry: route.routeGeometry, symbol: routeSymbol, attributes: nil)
-      self.routeGraphicsOverlay.graphics.add(routeGraphic)
+    @objc func getRouteIsVisible(_ args: RCTResponseSenderBlock) {
+        args([routeGraphicsOverlay.isVisible])
     }
-  }
-  
+    
+    @objc func setRouteIsVisible(_ args: Bool){
+        routeGraphicsOverlay.isVisible = args
+    }
+    
   // MARK: Exposed RN props
   @objc var basemapUrl: NSString? {
     didSet{
@@ -278,7 +277,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   
     @objc var routeUrl: NSString? {
     didSet {
-        if let routeUrl = routeUrl {
+        if let routeUrl = URL(string: String(routeUrl ?? "")) {
             router = RNAGSRouter(routeUrl: routeUrl)
         }
     }
@@ -335,4 +334,21 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
       onOverlayWasModified!(reactResult)
     }
   }
+    private func getOverlay(named name: NSString) -> RNAGSGraphicsOverlay?{
+        return self.graphicsOverlays.first(where: { (item) -> Bool in
+            guard let item = item as? RNAGSGraphicsOverlay else {
+                return false
+            }
+            return item.referenceId == name
+        }) as? RNAGSGraphicsOverlay
+    }
+    
+    private func draw(route: AGSRoute, with color: UIColor){
+        DispatchQueue.main.async {
+            self.routeGraphicsOverlay.graphics.removeAllObjects()
+            let routeSymbol = AGSSimpleLineSymbol(style: .solid, color: color, width: 5)
+            let routeGraphic = AGSGraphic(geometry: route.routeGeometry, symbol: routeSymbol, attributes: nil)
+            self.routeGraphicsOverlay.graphics.add(routeGraphic)
+        }
+    }
 }

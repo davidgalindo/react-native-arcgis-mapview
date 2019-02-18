@@ -1,7 +1,6 @@
 package com.davidgalindo.rnarcgismapview;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -27,10 +26,8 @@ import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -44,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class RNAGSMapView extends LinearLayout implements LifecycleEventListener {
     // MARK: Variables/Prop declarations
@@ -268,6 +264,15 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
     }
 
+    // set/get
+    public void setRouteIsVisible(Boolean isVisible) {
+        routeGraphicsOverlay.setVisible(isVisible);
+    }
+
+    public Boolean getRouteIsVisible() {
+        return routeGraphicsOverlay.isVisible();
+    }
+
     // Routing
     public void routeGraphicsOverlay(ReadableMap args) {
         if (router == null) {
@@ -318,6 +323,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         );
     }
 
+
     // MARK: OnTouchListener
     public class OnSingleTouchListener extends DefaultMapViewOnTouchListener {
         OnSingleTouchListener(Context context, MapView mMapView){
@@ -325,7 +331,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
 
         @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
+        public boolean onDown(MotionEvent e) {
+            WritableMap map = createPointMap(e);
+            emitEvent("mapMoved",map);
+            return true;
+        }
+
+        private WritableMap createPointMap(MotionEvent e){
             android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
             WritableMap screenPointMap = Arguments.createMap();
             screenPointMap.putInt("x",screenPoint.x);
@@ -340,6 +352,14 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             WritableMap map = Arguments.createMap();
             map.putMap("screenPoint", screenPointMap);
             map.putMap("mapPoint",mapPointMap);
+            return map;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            WritableMap map = createPointMap(e);
+            android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
+
 
             ListenableFuture<List<IdentifyGraphicsOverlayResult>> future = mMapView.identifyGraphicsOverlaysAsync(screenPoint,15, false);
             future.addDoneListener(() -> {

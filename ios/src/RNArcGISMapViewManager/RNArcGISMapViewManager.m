@@ -30,6 +30,11 @@
   RCT_EXTERN_METHOD(removePointsFromOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
   RCT_EXTERN_METHOD(updatePointsInGraphicsOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
   RCT_EXTERN_METHOD(routeGraphicsOverlayViaManager:(nonnull NSNumber*) node args:(NSDictionary*)args)
+  RCT_EXTERN_METHOD(routeIsShowing:(nonnull NSNumber*) node callback: (RCTResponseSenderBlock*)callback)
+  RCT_EXTERN_METHOD(setRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
+  RCT_EXTERN_METHOD(getRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
+
+
   RCT_EXTERN_METHOD(dispose:(nonnull NSNumber*) node)
 
 

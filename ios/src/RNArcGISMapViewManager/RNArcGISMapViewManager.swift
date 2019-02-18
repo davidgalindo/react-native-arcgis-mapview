@@ -79,6 +79,20 @@ public class RNArcGISMapViewManager: RCTViewManager {
       component.routeGraphicsOverlay(args)
     }
   }
+    
+    @objc func setRouteIsVisibleViaManager(_ node: NSNumber, args: ObjCBool) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.setRouteIsVisible(args.boolValue)
+        }
+    }
+    
+    @objc func getRouteIsVisibleViaManager(_ node: NSNumber, args: @escaping RCTResponseSenderBlock) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.getRouteIsVisible(args)
+        }
+    }
   
   @objc func dispose(_ node: NSNumber) {
     self.agsMapView?.graphicsOverlays.removeAllObjects()
