@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import ArcGIS
+
 
 @objc(RNArcGISMapViewManager)
 public class RNArcGISMapViewManager: RCTViewManager {
@@ -100,4 +102,12 @@ public class RNArcGISMapViewManager: RCTViewManager {
     self.agsMapView = nil
   }
   
+  @objc func setLicenseKey(_ key: String) {
+    do {
+        try AGSArcGISRuntimeEnvironment.setLicenseKey(key)
+    }
+    catch let error as NSError {
+        print("error: \(error)")
+    }
+  }
 }

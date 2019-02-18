@@ -15,7 +15,7 @@ public class RNArcGISMapViewModule extends ReactContextBaseJavaModule {
     }
     @Override
     public String getName() {
-        return "RNArcGISMapViewModule";
+        return "RNArcGISMapViewManager";
     }
 
     @ReactMethod

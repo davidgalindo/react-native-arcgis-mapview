@@ -97,7 +97,7 @@ class ArcGISMapView extends React.Component {
         [callback]
       );
     } else {
-      NativeModules.RNArcGISMapViewModule.getRouteIsVisible(findNodeHandle(this.agsMapRef),callback);
+      NativeModules.RNArcGISMapViewManager.getRouteIsVisible(findNodeHandle(this.agsMapRef),callback);
     }
   };
 
@@ -125,7 +125,7 @@ class ArcGISMapView extends React.Component {
 }
 
 export const setLicenseKey = (string) => {
-  NativeModules.RNArcGISMapViewModule.setLicenseKey(string);
+  NativeModules.RNArcGISMapViewManager.setLicenseKey(string);
 };
 
 
