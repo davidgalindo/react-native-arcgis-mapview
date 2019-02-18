@@ -28,6 +28,8 @@ render() {
   * [Props In Depth](#props-in-depth)
     * [Basemap URL](#basemap-url)
     * [onSingleTap](#onSingleTap)
+  * [Callbacks](#callbacks)
+    
   * [Methods](#methods)
     * [The Point Object](#the-point-object)
     * [The Image Object](#the-image-object)
@@ -160,7 +162,6 @@ initialMapCenter | Object Array | Specifies the initial center of the map. Objec
 recenterIfGraphicTapped | Boolean | If true, the map will recenter if a graphic is tapped on. | false
 basemapUrl | String | A URL that links to an ArcGIS Online map with your style. A description on how to get this working can be found below. [Here's an example of one that works.](https://david-galindo.maps.arcgis.com/home/item.html?id=96b0b60f091d4b3983f23fab131e8a72) | ''
 routeUrl | String | A URL that refers to an ArcGIS routing service. See [routing](#routing) below for more information.
-onSingleTap | `(event) => {}` | A callback that runs whenever the map is clicked. See below for more information. | `(event) => {}`
 
 ### Props In Depth
 ##### Basemap URL
@@ -171,32 +172,33 @@ Just follow these steps to get your basemap up and running.
 4. Click on your map object. Click on Share and make sure you check 'Everyone' and then click 'Save.' Click 'Update' if necessary. Then click on the 'Settings' tab, scroll down to the Web Map Section, and then click 'Update Layers to HTTPS,' then 'Update Layers.'
 5. Now copy the URL from the search bar (it should look like this: http://david-galindo.maps.arcgis.com/home/item.html?id=fc75f65db9504175b2fb0e87b66672e5#overview), remove anything after the # (including the #), change the http to https, and bingo, you got your basemap URL! Add that as the basemapUrl prop and you're good to go. It might take a moment to get up and running.
 
-##### onSingleTap
-When onSingleTap is invoked, it takes the following object as a parameter:
-```javascript
-{
-  points: {
-    mapPoint: {latitude: Number, longitude: Number},
-    screenPoint: {x: Number, y: Number},
-  },
-  graphicReferenceId: String(nullable),
-}
-```
-A graphicReferenceId will be returned if a graphic was clicked. Only the topmost graphic ID will be returned if there are multiple graphics close to each other. 
+#### Callbacks
+
+Callback Name | Parameters | Description
+--- | --- | ---
+onSingleTap | `{ points: { mapPoint: {latitude: Number, longitude: Number}, screenPoint: {x: Number, y: Number}, },graphicReferenceId: String?, }` | A callback that runs whenever the map is tapped once. A graphics ID is returned if a graphic was tapped on.
+onOverlayWasAdded | `{ referenceId: String }` | Called when overlay is added.
+onOverlayWasRemoved | `{ referenceId: String }` | Called when overlay is removed.
+onOverlayWasModified | `{ referenceId: String, action: String, success: Boolean, errorMessage: String? }` | Fires when an overlay was modified. 
+onMapDidLoad | `{ success: Boolean, errorMessage: String? }` | Executed when the map finishes loading or runs into an error.
+
+
+
 
 #### Methods
-Note that `property: String?` indicates `property` is an optional String, `item: [String]` means `item` is a String array, and `token: Number = 0` means `token` has a default value of 0.
 
 Method Name | Parameters | Description
 ----- | ----- | -----
-showCallout | { point: {latitude, longitude} , title: String?, text String?, shouldRecenter: Boolean? } | (iOS Only) Creates a callout popup with a title and description at the given point.
-recenterMap | [ point: {latitude, longitude}, point, ... ] | Recenters the map around the given point(s).
-addGraphicsOverlay | {pointGraphics: [graphicId: String, graphic: Image]?, referenceId: String, points: [Point] | Adds a graphics overlay with the given points. See below for more information.
-removeGraphicsOverlay | overlayId: String | Removes the graphics overlay with the given ID.
-addPointsToOverlay | { overlayReferenceId: String, points: [Point] } | Adds points to the overlay with the given overlayReferenceId.
-removePointsFromOverlay | { overlayReferenceId: String, referenceIds: [String] } | Removes points from the overlay with the given overlayReferenceID. The reference ID array are the IDs of the points you wish to remove.
-updatePointsOnOverlay | { overlayReferenceId: String, updates: [Point] } | Updates points on a given overlay. All properties within an individual Point object are optional, though latitude and longitude must both be provided if you are updating either one.
-routeGraphicsOverlay | { overlayReferenceId: String, excludeGraphics: [String]?, routeColor: String? } | Routes a one-way route from all points within the overlay associated with the overlayReferenceId. You can exclude points by ID by placing their IDs inside the excludeGraphics array. See below for more info.
+showCallout | `{ point: {latitude, longitude} , title: String?, text String?, shouldRecenter: Boolean? }` | (iOS Only) Creates a callout popup with a title and description at the given point.
+recenterMap | `[ point: {latitude, longitude}, point, ... ]` | Recenters the map around the given point(s).
+addGraphicsOverlay | `{pointGraphics: [graphicId: String, graphic: Image]?, referenceId: String, points: [Point] }` | Adds a graphics overlay with the given points. See below for more information.
+removeGraphicsOverlay | `{ overlayId: String }` | Removes the graphics overlay with the given ID.
+addPointsToOverlay | `{ overlayReferenceId: String, points: [Point] }` | Adds points to the overlay with the given overlayReferenceId.
+removePointsFromOverlay | `{ overlayReferenceId: String, referenceIds: [String] }` | Removes points from the overlay with the given overlayReferenceID. The reference ID array are the IDs of the points you wish to remove.
+updatePointsOnOverlay | `{ overlayReferenceId: String, updates: [Point] }` | Updates points on a given overlay. All properties within an individual Point object are optional, though latitude and longitude must both be provided if you are updating either one.
+routeGraphicsOverlay | `{ overlayReferenceId: String, excludeGraphics: [String]?, routeColor: String? }` | Routes a one-way route from all points within the overlay associated with the overlayReferenceId. You can exclude points by ID by placing their IDs inside the excludeGraphics array. See below for more info.
+getRouteIsVisibleViaManager | ` {callback: Callback(Boolean)} ` | Returns the visibility of the route layer and passes it through a callback.
+setRouteIsVisibleViaManager | `{ args: Boolean }` | Toggles the visiblity of the routing layer. 
 ##### The Point Object
 Above, the Point object was referenced as 'Point.' The Point object is structured as follows:
 ```javascript
