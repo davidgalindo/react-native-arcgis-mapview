@@ -123,31 +123,15 @@ Build issues? Make sure your iOS project targets iOS 11. Then clean and restart 
 ### License your map
 A license is not required to develop and test. However, to release your app, you must provide a license. See [here for iOS](https://developers.arcgis.com/ios/latest/swift/guide/license-your-app.htm) or [here for Android](https://developers.arcgis.com/android/latest/guide/license-your-app.htm) for more information on how to get a license.
 
-Once you have one, follow these steps:
-##### Android
-Add the following to your MainApplication.java:
-```java
-import com.davidgalindo.rnarcgismapview.RNArcGISMapViewPackage;
+Once you have one, it's easy to add it into your project. In your App.js (or wherever you initialize your app)
+```javascript
+import { setLicenseKey } from 'react-native-arcgis-mapview';
+
+export default class App extends Component {
   ...
-  public void onCreate(){
+  constructor(props){
+    setLicenseKey('your_key');
     ...
-    RNArcGISMapViewPackage.setLicenseKey("Your License Key");
-  }
-```
-##### iOS
-Add the following to your main.m:
-```objc
-import <ArcGIS/ArcGIS.h>
-...
-int main() {
-  ...
-    NSError *error;
-  AGSLicenseResult *licenseResult = [AGSArcGISRuntimeEnvironment setLicenseKey:@"Your License Key" error:&error];
-  if (error) {
-    .. Print the error      
-  }
-  else {
-   NSLog(@"license status = %li", licenseResult.licenseStatus);
   }
   ...
 }
