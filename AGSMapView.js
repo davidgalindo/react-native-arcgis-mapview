@@ -1,9 +1,10 @@
 //  Created by react-native-create-bridge
 
 import React from 'react'
-import { requireNativeComponent,  UIManager, findNodeHandle } from 'react-native'
+import { requireNativeComponent, NativeModules,  UIManager, findNodeHandle } from 'react-native'
 import PropTypes from 'prop-types'
 const AGSMap = requireNativeComponent('RNArcGISMapView', ArcGISMapView);
+
 
 class ArcGISMapView extends React.Component {
   // MARK: Props
@@ -88,6 +89,26 @@ class ArcGISMapView extends React.Component {
     );
   }
   
+  getRouteIsVisible = (callback) => {
+    if (Platform.OS === 'ios') { 
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this.agsMapRef),
+        UIManager.getViewManagerConfig('RNArcGISMapView').Commands.getRouteIsVisibleViaManager,
+        [callback]
+      );
+    } else {
+      NativeModules.RNArcGISMapViewModule.getRouteIsVisible(findNodeHandle(this.agsMapRef),callback);
+    }
+  };
+
+  setRouteIsVisible = (args) => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.setRouteIsVisibleViaManager,
+      [args]
+    );
+  }
+
   // MARK: Render
   render () {
     return <AGSMap {...this.props} ref={e => this.agsMapRef = e} />
