@@ -32,7 +32,6 @@ render() {
     * [Basemap URL](#basemap-url)
     * [onSingleTap](#onSingleTap)
   * [Callbacks](#callbacks)
-    
   * [Methods](#methods)
     * [The Point Object](#the-point-object)
     * [The Image Object](#the-image-object)
@@ -47,9 +46,9 @@ render() {
 Then run `react-native link react-native-arcgis-mapview`
 
 ### Modify your Android native project
-First off, make sure your minSdk is 19 and your targetSdk is at least 28. ArcGIS requires a minimum SDK level of 19.
+First off, make sure your minSdk version is 19 and your targetSdk is at least 28 (ArcGIS requires a minimum SDK level of 19). You can easily set these by modifying your Project build.gradle, within buildscript -> ext. 
 
-Inside your Project Gradle file, inside of allProjects, add the following:
+Inside your Project Gradle file, inside of allProjects, and within the repositories tag, add the following:
 ```
 maven {
   url 'https://esri.bintray.com/arcgis'
@@ -102,7 +101,6 @@ target 'Example' do
   # Use the following line instead:
   #pod 'GLog', :podspec => "#{rn_path}/third-party-podspecs/GLog.podspec"
   pod 'Folly', :podspec => "#{rn_path}/third-party-podspecs/Folly.podspec"
-  pod 'ArcGIS-Runtime-SDK-iOS', '100.4'
   pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/ios"
 
 end
@@ -117,11 +115,10 @@ post_install do |installer|
   end
 end
 ```
-If you already have a podfile, add the postinstall lines and the declaraction for the ArcGIS-Runtime-SDK-iOS Pod and the RNArcGISMapView Pod.
+If you already have a podfile, this is the key line you need to add:
+`pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/ios"`
 
-If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a briding header. **CHOOSE CREATE!!** Then clean, rebuild, and you should be good to go.
-
-Build issues? Make sure your iOS project targets iOS 11. Then clean and restart XCode. Clean again and try to build. Don't forget to run `react-native link react-native-arcgis-mapview`. Also, check if the Swift Language Version in your project file is set to Swift 4.2.
+If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a briding header. **CHOOSE CREATE!!** (We do this so XCode knows we will be using Swift within our project). Then, open your project file and ensure your iOS Project targets iOS 11 or above and the Swift Language Version is set to 'Swift 4.2.' Clean, rebuild, and you should be good to go.
 
 ### License your map
 A license is not required to develop and test. However, to release your app, you must provide a license. See [here for iOS](https://developers.arcgis.com/ios/latest/swift/guide/license-your-app.htm) or [here for Android](https://developers.arcgis.com/android/latest/guide/license-your-app.htm) for more information on how to get a license.
