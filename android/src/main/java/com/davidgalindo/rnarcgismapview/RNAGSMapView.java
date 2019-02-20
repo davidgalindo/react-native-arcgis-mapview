@@ -16,6 +16,7 @@ import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
+import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
@@ -28,12 +29,14 @@ import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.ArrayList;
@@ -299,17 +302,39 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             color = "#FF0000";
         }
         assert overlay != null;
-        Route route = router.createRoute(overlay.getAGSGraphicsOverlay(),removeGraphics);
+        ListenableFuture<RouteResult> future = router.createRoute(overlay.getAGSGraphicsOverlay(),removeGraphics);
+        if (future == null) {
+            Log.w("Warning (AGS)", "There was an issue creating the route. Please try again later, or check your routing server.");
+            return;
+        }
+        setIsRouting(true);
+        future.addDoneListener(() -> {
+            try {
+                RouteResult result = future.get();
+                if (result != null && !result.getRoutes().isEmpty()) {
+                    Route route = result.getRoutes().get(0);
+                    drawRoute(route, color);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            } finally {
+                setIsRouting(false);
+            }
+        });
+    }
+
+    private void setIsRouting(Boolean value) {
+        ((ReactContext) getContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("isRoutingChanged",value);
+    }
+
+    private void drawRoute(Route route, String color) {
         if (route == null) {
             Log.w("Warning (AGS)", "No route result returned.");
             return;
         }
-        drawRoute(route, color);
-    }
-
-    private void drawRoute(Route route, String color) {
         routeGraphicsOverlay.getGraphics().clear();
         SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor(color),5);
+        Polyline polyline = route.getRouteGeometry();
         Graphic routeGraphic = new Graphic(route.getRouteGeometry(),symbol);
         routeGraphicsOverlay.getGraphics().add(routeGraphic);
     }
@@ -333,7 +358,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         @Override
         public boolean onDown(MotionEvent e) {
             WritableMap map = createPointMap(e);
-            emitEvent("mapMoved",map);
+            emitEvent("onMapMoved",map);
             return true;
         }
 

@@ -14,6 +14,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
   // MARK: Properties
   var routeGraphicsOverlay = AGSGraphicsOverlay()
   var router: RNAGSRouter?
+  var bridge: RCTBridge?
 
   // MARK: Initializers and helper methods
   required init?(coder aDecoder: NSCoder) {
@@ -227,6 +228,8 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
     let excludeGraphics = args["excludeGraphics"] as? [NSString]
     let color = UIColor(hex: String(args["routeColor"] as? NSString ?? "#FF0000"))!
+    let module = self.bridge?.module(forName: "RNArcGISMapViewModule") as? RNArcGISMapViewModule
+    
     router.createRoute(withGraphicOverlay: overlay, excludeGraphics: excludeGraphics) { [weak self] (result, error) in
       if let error = error {
         print("RNAGSMapView - WARNING: Error while routing: \(error.localizedDescription)")

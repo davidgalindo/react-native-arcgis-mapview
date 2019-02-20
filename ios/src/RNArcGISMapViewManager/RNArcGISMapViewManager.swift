@@ -17,6 +17,7 @@ public class RNArcGISMapViewManager: RCTViewManager {
   override public func view() -> UIView! {
     if (agsMapView == nil) {
       agsMapView = RNArcGISMapView()
+      agsMapView!.bridge = self.bridge
     }
     return agsMapView!
   }

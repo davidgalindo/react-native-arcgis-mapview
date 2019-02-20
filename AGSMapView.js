@@ -1,18 +1,28 @@
 //  Created by react-native-create-bridge
 
 import React from 'react'
-import { requireNativeComponent, NativeModules,  UIManager, findNodeHandle } from 'react-native'
+import { requireNativeComponent, NativeModules,  UIManager, findNodeHandle, DeviceEventEmitter } from 'react-native'
 import PropTypes from 'prop-types'
 const AGSMap = requireNativeComponent('RNArcGISMapView', ArcGISMapView);
 
 
 class ArcGISMapView extends React.Component {
+  constructor(props) {
+    super(props);
+    DeviceEventEmitter.addListener('isRoutingChanged', this.props.onRoutingStatusUpdate);
+  }
   // MARK: Props
   static propTypes = {
     basemapUrl: PropTypes.string,
     initialMapCenter: PropTypes.arrayOf(PropTypes.object),
-    onSingleTap: PropTypes.func,
     routeUrl: PropTypes.string,
+    onOverlayWasAdded: PropTypes.func,
+    onOverlayWasRemoved:  PropTypes.func,
+    onOverlayWasModified: PropTypes.func,
+    onMapDidLoad: PropTypes.func,
+    onMapMoved: PropTypes.func,
+    onSingleTap: PropTypes.func,
+    
   };
 
   static defaultProps = {
@@ -20,9 +30,17 @@ class ArcGISMapView extends React.Component {
       {latitude: 36.244797, longitude: -94.148060}
     ],
     basemapUrl: '',
-    onSingleTap: (event) => { },
+    onSingleTap: () => { },
+    onOverlayWasAdded: () => { },
+    onOverlayWasRemoved:  () => { },
+    onOverlayWasModified: () => { },
+    onMapDidLoad: () => { },
+    onMapMoved: () => { },
+    onRoutingStatusUpdate: () => { },
     routeUrl: '',
   };
+
+  isRouting = false;
 
   // MARK: Exposed native methods
   showCallout = (args) => {

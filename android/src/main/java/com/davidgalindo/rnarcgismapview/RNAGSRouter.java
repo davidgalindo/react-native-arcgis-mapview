@@ -42,7 +42,7 @@ public class RNAGSRouter {
         });
     }
 
-    public Route createRoute(@NonNull GraphicsOverlay graphicsOverlay, @Nullable ArrayList<String> excludeGraphics){
+    public ListenableFuture<RouteResult> createRoute(@NonNull GraphicsOverlay graphicsOverlay, @Nullable ArrayList<String> excludeGraphics){
         // Clear stops
         if (routeParameters == null) {
             Log.w("WARNING (AGS)", "It looks like the Esri Routing service is down, or you did not provide valid credentials. Please try again later, or submit an issue.");
@@ -61,16 +61,6 @@ public class RNAGSRouter {
             }
         }
         routeParameters.setOutputSpatialReference(SpatialReferences.getWgs84());
-        ListenableFuture<RouteResult> future  = routeTask.solveRouteAsync(routeParameters);
-        try {
-            RouteResult result = future.get();
-            if (result == null || result.getRoutes().isEmpty()) {
-                return null;
-            }
-            return result.getRoutes().get(0);
-        } catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return routeTask.solveRouteAsync(routeParameters);
     }
 }

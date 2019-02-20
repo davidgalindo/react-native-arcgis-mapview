@@ -125,6 +125,11 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
                         MapBuilder.of(
                                 "phasedRegistrationNames",
                                 MapBuilder.of("bubbled", "onOverlayWasRemoved")))
+                .put(
+                        "onMapMoved",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onMapMoved")))
                 .build();
     }
 }

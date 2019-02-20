@@ -9,6 +9,7 @@
 #import "RCTBridgeModule.h"
 #import "React/RCTViewManager.h"
 #import <React/RCTBridge.h>
+#import "React/RCTEventEmitter.h"
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
