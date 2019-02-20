@@ -13,6 +13,7 @@ public class RNArcGISMapViewModule extends ReactContextBaseJavaModule {
     public RNArcGISMapViewModule(ReactApplicationContext context) {
         super(context);
     }
+
     @Override
     public String getName() {
         return "RNArcGISMapViewManager";

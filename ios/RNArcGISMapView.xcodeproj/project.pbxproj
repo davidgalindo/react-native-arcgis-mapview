@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA0B8009221DF1FD00FCBDA9 /* RNArcGISMapViewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FA0B8008221DF1FD00FCBDA9 /* RNArcGISMapViewModule.m */; };
-		FA0B800B221DF21300FCBDA9 /* RNArcGISMapVIewModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0B800A221DF21300FCBDA9 /* RNArcGISMapVIewModule.swift */; };
 		FA3A2BE222161819009360CB /* RNAGSUIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */; };
 		FA3A2BE322161819009360CB /* RNAGSRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA3A2BE122161819009360CB /* RNAGSRouter.swift */; };
 		FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAACB6E5220CC03900B7F583 /* RNAGSGraphicsOverlay.swift */; };
@@ -31,8 +29,6 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNArcGISMapView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNArcGISMapView.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA0B8008221DF1FD00FCBDA9 /* RNArcGISMapViewModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNArcGISMapViewModule.m; sourceTree = "<group>"; };
-		FA0B800A221DF21300FCBDA9 /* RNArcGISMapVIewModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNArcGISMapVIewModule.swift; sourceTree = "<group>"; };
 		FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Project-Umbrella-Header.h"; sourceTree = "<group>"; };
 		FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSUIColorExtension.swift; sourceTree = "<group>"; };
 		FA3A2BE122161819009360CB /* RNAGSRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNAGSRouter.swift; sourceTree = "<group>"; };
@@ -69,19 +65,9 @@
 			);
 			sourceTree = "<group>";
 		};
-		FA0B8007221DF1EE00FCBDA9 /* RNArcGISMapViewModule */ = {
-			isa = PBXGroup;
-			children = (
-				FA0B8008221DF1FD00FCBDA9 /* RNArcGISMapViewModule.m */,
-				FA0B800A221DF21300FCBDA9 /* RNArcGISMapVIewModule.swift */,
-			);
-			path = RNArcGISMapViewModule;
-			sourceTree = "<group>";
-		};
 		FAACB6E4220CC03900B7F583 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FA0B8007221DF1EE00FCBDA9 /* RNArcGISMapViewModule */,
 				FA3A2BE122161819009360CB /* RNAGSRouter.swift */,
 				FA3A2BE022161819009360CB /* RNAGSUIColorExtension.swift */,
 				FA0F99B9220CCE1D00B935AB /* Project-Umbrella-Header.h */,
@@ -163,8 +149,6 @@
 				FAACB6EB220CC03900B7F583 /* RNArcGISMapView.swift in Sources */,
 				FAACB6EA220CC03900B7F583 /* RNAGSGraphicsOverlay.swift in Sources */,
 				FA3A2BE222161819009360CB /* RNAGSUIColorExtension.swift in Sources */,
-				FA0B800B221DF21300FCBDA9 /* RNArcGISMapVIewModule.swift in Sources */,
-				FA0B8009221DF1FD00FCBDA9 /* RNArcGISMapViewModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,17 +16,18 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RNAGSGraphicsOverlay{
+public class RNAGSGraphicsOverlay {
     private GraphicsOverlay graphicsOverlay;
-    private HashMap<String,String> pointImageDictionary;
+    private HashMap<String, String> pointImageDictionary;
     private String referenceId;
+
     public RNAGSGraphicsOverlay(ReadableMap rawData, GraphicsOverlay graphicsOverlay) {
         this.referenceId = rawData.getString("referenceId");
         ReadableArray pointImageDictionaryRaw = rawData.getArray("pointGraphics");
         pointImageDictionary = new HashMap<>();
         this.graphicsOverlay = graphicsOverlay;
 
-        for (int i = 0; i <  pointImageDictionaryRaw.size(); i++) {
+        for (int i = 0; i < pointImageDictionaryRaw.size(); i++) {
             ReadableMap item = pointImageDictionaryRaw.getMap(i);
             if (item.hasKey("graphicId")) {
                 String graphicId = item.getString("graphicId");
@@ -52,7 +53,7 @@ public class RNAGSGraphicsOverlay{
     }
 
     public void updateGraphics(ReadableArray args) {
-        for(int i = 0; i < args.size(); i++){
+        for (int i = 0; i < args.size(); i++) {
             updateGraphicLoop(args.getMap(i));
         }
     }
@@ -62,7 +63,7 @@ public class RNAGSGraphicsOverlay{
         com.esri.arcgisruntime.geometry.Point agsPoint = null;
         // Get references
         String referenceId = args.getString("referenceId");
-        Map<String,Object> attributes = null;
+        Map<String, Object> attributes = null;
 
         // Once we have all the required values, we change them
         Graphic graphic = ArrayHelper.graphicViaReferenceId(graphicsOverlay, referenceId);
@@ -80,7 +81,7 @@ public class RNAGSGraphicsOverlay{
             graphic.getAttributes().putAll(attributes);
 
         }
-        if(args.hasKey("graphicsId")) {
+        if (args.hasKey("graphicsId")) {
             String graphicsId = args.getString("graphicsId");
             String graphicUri = pointImageDictionary.get(graphicsId);
             if (graphicUri != null) {
@@ -143,17 +144,17 @@ public class RNAGSGraphicsOverlay{
                 result = new Graphic(agsPoint, symbol);
             }
         }
-        result.getAttributes().put("referenceId",point.getReferenceId());
+        result.getAttributes().put("referenceId", point.getReferenceId());
         return result;
 
     }
 
-    private static Map<String,Object> readableMapToMap(ReadableMap rawMap) {
-        Map<String,Object> map = new HashMap<>();
+    private static Map<String, Object> readableMapToMap(ReadableMap rawMap) {
+        Map<String, Object> map = new HashMap<>();
         ReadableMapKeySetIterator iterator = rawMap.keySetIterator();
         while (iterator.hasNextKey()) {
             String key = iterator.nextKey();
-            map.put(key,rawMap.getString(key));
+            map.put(key, rawMap.getString(key));
         }
         return map;
     }
@@ -189,7 +190,7 @@ public class RNAGSGraphicsOverlay{
                     rawData.getString("referenceId"),
                     map,
                     graphicId
-                    );
+            );
         }
 
         private Point(@NonNull Double latitude, @NonNull Double longitude, @NonNull Double rotation, @NonNull String referenceId,

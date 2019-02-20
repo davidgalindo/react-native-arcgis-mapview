@@ -12,76 +12,76 @@ import ArcGIS
 
 @objc(RNArcGISMapViewManager)
 public class RNArcGISMapViewManager: RCTViewManager {
-  var agsMapView: RNArcGISMapView?
-  
-  override public func view() -> UIView! {
-    if (agsMapView == nil) {
-      agsMapView = RNArcGISMapView()
-      agsMapView!.bridge = self.bridge
+    var agsMapView: RNArcGISMapView?
+    
+    override public func view() -> UIView! {
+        if (agsMapView == nil) {
+            agsMapView = RNArcGISMapView()
+            agsMapView!.bridge = self.bridge
+        }
+        return agsMapView!
     }
-    return agsMapView!
-  }
-  
-  override public class func requiresMainQueueSetup() -> Bool {
-    return true;
-  }
-  
-  // MARK: Exposed Obj-C bridging functions
-  @objc func showCalloutViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.showCallout(args)
+    
+    override public class func requiresMainQueueSetup() -> Bool {
+        return true;
     }
-  }
-  
-  @objc func centerMapViaManager(_ node: NSNumber, args: NSArray) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.centerMap(args)
+    
+    // MARK: Exposed Obj-C bridging functions
+    @objc func showCalloutViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.showCallout(args)
+        }
     }
-  }
-  
-  @objc func addGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.addGraphicsOverlay(args)
+    
+    @objc func centerMapViaManager(_ node: NSNumber, args: NSArray) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.centerMap(args)
+        }
     }
-  }
-  
-  @objc func addPointsToOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.addPointsToGraphicsOverlay(args)
+    
+    @objc func addGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.addGraphicsOverlay(args)
+        }
     }
-  }
-  
-  @objc func removePointsFromOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.removePointsFromGraphicsOverlay(args)
+    
+    @objc func addPointsToOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.addPointsToGraphicsOverlay(args)
+        }
     }
-  }
-  
-  @objc func removeGraphicsOverlayViaManager(_ node: NSNumber, args: NSString) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.removeGraphicsOverlay(args)
+    
+    @objc func removePointsFromOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.removePointsFromGraphicsOverlay(args)
+        }
     }
-  }
-  
-  @objc func updatePointsInGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.updatePointsInGraphicsOverlay(args)
+    
+    @objc func removeGraphicsOverlayViaManager(_ node: NSNumber, args: NSString) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.removeGraphicsOverlay(args)
+        }
     }
-  }
-  
-  @objc func routeGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
-    DispatchQueue.main.async {
-      let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
-      component.routeGraphicsOverlay(args)
+    
+    @objc func updatePointsInGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.updatePointsInGraphicsOverlay(args)
+        }
     }
-  }
+    
+    @objc func routeGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
+            component.routeGraphicsOverlay(args)
+        }
+    }
     
     @objc func setRouteIsVisibleViaManager(_ node: NSNumber, args: ObjCBool) {
         DispatchQueue.main.async {
@@ -96,21 +96,21 @@ public class RNArcGISMapViewManager: RCTViewManager {
             component.getRouteIsVisible(args)
         }
     }
-  
-  @objc func dispose(_ node: NSNumber) {
-    self.agsMapView?.graphicsOverlays.removeAllObjects()
-    self.agsMapView?.map = nil
-    self.agsMapView = nil
-  }
-  
-  @objc func setLicenseKey(_ key: String) {
-    do {
-        try AGSArcGISRuntimeEnvironment.setLicenseKey(key)
+    
+    @objc func dispose(_ node: NSNumber) {
+        self.agsMapView?.graphicsOverlays.removeAllObjects()
+        self.agsMapView?.map = nil
+        self.agsMapView = nil
     }
-    catch let error as NSError {
-        print("error: \(error)")
+    
+    @objc func setLicenseKey(_ key: String) {
+        do {
+            try AGSArcGISRuntimeEnvironment.setLicenseKey(key)
+        }
+        catch let error as NSError {
+            print("error: \(error)")
+        }
     }
-  }
 }
 
 @objc(RNArcGISMapViewModule)

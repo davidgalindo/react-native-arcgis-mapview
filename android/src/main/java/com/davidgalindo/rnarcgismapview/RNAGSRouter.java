@@ -42,7 +42,7 @@ public class RNAGSRouter {
         });
     }
 
-    public ListenableFuture<RouteResult> createRoute(@NonNull GraphicsOverlay graphicsOverlay, @Nullable ArrayList<String> excludeGraphics){
+    public ListenableFuture<RouteResult> createRoute(@NonNull GraphicsOverlay graphicsOverlay, @Nullable ArrayList<String> excludeGraphics) {
         // Clear stops
         if (routeParameters == null) {
             Log.w("WARNING (AGS)", "It looks like the Esri Routing service is down, or you did not provide valid credentials. Please try again later, or submit an issue.");
@@ -52,7 +52,7 @@ public class RNAGSRouter {
         // I know this is deprecated but it just works ._. setStops does not work... good job, Esri
         // See https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/tasks/networkanalysis/RouteParameters.html
         List<Stop> stops = routeParameters.getStops();
-        for (Graphic item: graphicsOverlay.getGraphics()) {
+        for (Graphic item : graphicsOverlay.getGraphics()) {
             String referenceId = ((String) item.getAttributes().get("referenceId"));
             if (excludeGraphics == null || !(excludeGraphics.contains(referenceId))) {
                 // Reform the point with spatial reference

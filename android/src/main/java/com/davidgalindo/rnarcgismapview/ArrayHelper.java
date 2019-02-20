@@ -8,9 +8,10 @@ import java.util.List;
 public class ArrayHelper {
     public static Graphic graphicViaReferenceId(GraphicsOverlay graphicsOverlay, String referenceId) {
         List<Graphic> list = graphicsOverlay.getGraphics();
-        for (Graphic item: list) {
+        for (Graphic item : list) {
             String referenceIdFromGraphic = ((String) item.getAttributes().get("referenceId"));
-            if (referenceIdFromGraphic != null && referenceIdFromGraphic.equals(referenceId)) return item;
+            if (referenceIdFromGraphic != null && referenceIdFromGraphic.equals(referenceId))
+                return item;
         }
         return null;
     }
