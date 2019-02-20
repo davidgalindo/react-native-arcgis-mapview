@@ -118,7 +118,7 @@ end
 If you already have a podfile, this is the key line you need to add:
 `pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/ios"`
 
-If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a briding header. **CHOOSE CREATE!!** (We do this so XCode knows we will be using Swift within our project). Then, open your project file and ensure your iOS Project targets iOS 11 or above and the Swift Language Version is set to 'Swift 4.2.' Clean, rebuild, and you should be good to go.
+If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a bridging header. If you plan on using Swift in your project, selecte 'Create Header'; otherwise, select no thanks. Then, open your project file and ensure your iOS Project targets iOS 11 or above and the Swift Language Version is set to 'Swift 4.2.' Clean, rebuild, and you should be good to go.
 
 ### License your map
 A license is not required to develop and test. However, to release your app, you must provide a license. See [here for iOS](https://developers.arcgis.com/ios/latest/swift/guide/license-your-app.htm) or [here for Android](https://developers.arcgis.com/android/latest/guide/license-your-app.htm) for more information on how to get a license.
