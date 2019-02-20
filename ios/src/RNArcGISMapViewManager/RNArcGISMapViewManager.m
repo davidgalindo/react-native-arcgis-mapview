@@ -8,7 +8,7 @@
 //
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
-
+#import "React/RCTEventEmitter.h"
 
 @interface RCT_EXTERN_MODULE(RNArcGISMapViewManager, RCTViewManager)
   RCT_EXPORT_VIEW_PROPERTY(basemapUrl, NSString)
@@ -38,6 +38,8 @@
   RCT_EXTERN_METHOD(setLicenseKey:(nonnull NSString*)key)
 
   RCT_EXTERN_METHOD(dispose:(nonnull NSNumber*) node)
+@end
 
-
+@interface RCT_EXTERN_MODULE(RNArcGISMapViewModule, RCTEventEmitter)
+RCT_EXTERN_METHOD(sendIsRoutingChanged: (BOOL*)value)
 @end

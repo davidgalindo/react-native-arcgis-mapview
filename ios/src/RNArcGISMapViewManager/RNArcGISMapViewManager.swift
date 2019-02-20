@@ -112,3 +112,28 @@ public class RNArcGISMapViewManager: RCTViewManager {
     }
   }
 }
+
+@objc(RNArcGISMapViewModule)
+public class RNArcGISMapViewModule: RCTEventEmitter {
+    
+    // MARK: Event emitting to JS
+    @objc func sendIsRoutingChanged(_ value: Bool) {
+        sendEvent(withName: "isRoutingChanged", body: [value])
+    }
+    
+    
+    // MARK: Overrides
+    
+    override public func supportedEvents() -> [String]! {
+        return ["isRoutingChanged"]
+    }
+    
+    @objc override public static func requiresMainQueueSetup() -> Bool {
+        return true
+    }
+    
+    override public func constantsToExport() -> [AnyHashable : Any]! {
+        return [:]
+    }
+    
+}

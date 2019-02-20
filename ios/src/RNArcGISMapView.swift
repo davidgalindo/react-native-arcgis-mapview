@@ -228,14 +228,16 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
     let excludeGraphics = args["excludeGraphics"] as? [NSString]
     let color = UIColor(hex: String(args["routeColor"] as? NSString ?? "#FF0000"))!
-    let module = self.bridge?.module(forName: "RNArcGISMapViewModule") as? RNArcGISMapViewModule
-    
+    let module = self.bridge!.module(forName: "RNArcGISMapViewModule") as! RNArcGISMapViewModule
+    module.sendIsRoutingChanged(true)
     router.createRoute(withGraphicOverlay: overlay, excludeGraphics: excludeGraphics) { [weak self] (result, error) in
       if let error = error {
+        module.sendIsRoutingChanged(false)
         print("RNAGSMapView - WARNING: Error while routing: \(error.localizedDescription)")
         return
       }
       guard let result = result else {
+        module.sendIsRoutingChanged(false)
         print("RNAGSMapView - WARNING: No result obtained.")
         return
       }
@@ -243,9 +245,13 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
       print("RNAGSMapView - Route Completed")
       let generatedRoute = result.routes[0]
       self?.draw(route: generatedRoute, with: color)
+      module.sendIsRoutingChanged(false)
+
     }
   }
   
+    
+    
     @objc func getRouteIsVisible(_ args: RCTResponseSenderBlock) {
         args([routeGraphicsOverlay.isVisible])
     }

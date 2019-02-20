@@ -1,7 +1,7 @@
 //  Created by react-native-create-bridge
 
 import React from 'react'
-import { requireNativeComponent, NativeModules,  UIManager, findNodeHandle, DeviceEventEmitter } from 'react-native'
+import { NativeEventEmitter, Platform, requireNativeComponent, NativeModules,  UIManager, findNodeHandle, DeviceEventEmitter } from 'react-native'
 import PropTypes from 'prop-types'
 const AGSMap = requireNativeComponent('RNArcGISMapView', ArcGISMapView);
 
@@ -9,8 +9,15 @@ const AGSMap = requireNativeComponent('RNArcGISMapView', ArcGISMapView);
 class ArcGISMapView extends React.Component {
   constructor(props) {
     super(props);
-    DeviceEventEmitter.addListener('isRoutingChanged', this.props.onRoutingStatusUpdate);
+    var eventEmitter;
+    if (Platform.OS === 'ios') {
+      eventEmitter = new NativeEventEmitter(NativeModules.RNArcGISMapViewModule);
+    } else {
+      eventEmitter = DeviceEventEmitter;
+    }
+    eventEmitter.addListener('isRoutingChanged', this.props.onRoutingStatusUpdate);
   }
+  
   // MARK: Props
   static propTypes = {
     basemapUrl: PropTypes.string,
@@ -22,7 +29,6 @@ class ArcGISMapView extends React.Component {
     onMapDidLoad: PropTypes.func,
     onMapMoved: PropTypes.func,
     onSingleTap: PropTypes.func,
-    
   };
 
   static defaultProps = {
