@@ -144,6 +144,9 @@ initialMapCenter | Object Array | Specifies the initial center of the map. Objec
 recenterIfGraphicTapped | Boolean | If true, the map will recenter if a graphic is tapped on. | false
 basemapUrl | String | A URL that links to an ArcGIS Online map with your style. A description on how to get this working can be found below. [Here's an example of one that works.](https://david-galindo.maps.arcgis.com/home/item.html?id=96b0b60f091d4b3983f23fab131e8a72) | ''
 routeUrl | String | A URL that refers to an ArcGIS routing service. See [routing](#routing) below for more information.
+minZoom | Double | A value that represents the minimum level in which a user can zoom out. For example, 70000000 is about continent level zoom. | 0
+maxZoom | Double | A value that represents the maximum level in which a user can zoom in. For example, 10000 is about building zoom level. | 0
+rotateEnabled | Boolean | If false, prevents the user from rotating the map. | true
 
 ### Props In Depth
 ##### Basemap URL
