@@ -55,22 +55,46 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     HashMap<String, RNAGSGraphicsOverlay> rnGraphicsOverlays = new HashMap<>();
     GraphicsOverlay routeGraphicsOverlay;
     RNAGSRouter router;
+    private Callout callout;
+    Double minZoom = 0.0;
+    Double maxZoom = 0.0;
+    Boolean rotationEnabled = true;
 
     // MARK: Initializers
     public RNAGSMapView(Context context) {
         super(context);
-        rootView = inflate(context, R.layout.rnags_mapview, this);
+        rootView = inflate(context.getApplicationContext(),R.layout.rnags_mapview,this);
         mapView = rootView.findViewById(R.id.agsMapView);
         if (context instanceof ReactContext) {
             ((ReactContext) context).addLifecycleEventListener(this);
         }
         setUpMap();
+        setUpCallout();
+    }
+
+    private void setUpCallout() {
+        // We want to create the callout right after the View has finished its layout
+        mapView.post(() -> {
+            callout = mapView.getCallout();
+            callout.setContent(inflate(getContext().getApplicationContext(),R.layout.rnags_callout_content, null));
+            Callout.ShowOptions showOptions = new Callout.ShowOptions();
+            showOptions.setAnimateCallout(true);
+            showOptions.setAnimateRecenter(true);
+            showOptions.setRecenterMap(false);
+            callout.getStyle().setMaxHeight(1000);
+            callout.getStyle().setMaxWidth(1000);
+            callout.getStyle().setMinHeight(100);
+            callout.getStyle().setMinWidth(100);
+            callout.setShowOptions(showOptions);
+            callout.setPassTouchEventsToMapView(false);
+        });
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
     public void setUpMap() {
         mapView.setMap(new ArcGISMap(Basemap.Type.STREETS_VECTOR, 34.057, -117.196, 17));
-        mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
+        mapView.setOnTouchListener(new OnSingleTouchListener(getContext(),mapView));
         routeGraphicsOverlay = new GraphicsOverlay();
         mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
         mapView.getMap().addDoneLoadingListener(() -> {
@@ -78,17 +102,17 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             Boolean success = e != null;
             String errorMessage = !success ? "" : e.getMessage();
             WritableMap map = Arguments.createMap();
-            map.putBoolean("success", success);
-            map.putString("errorMessage", errorMessage);
+            map.putBoolean("success",success);
+            map.putString("errorMessage",errorMessage);
 
-            emitEvent("onMapDidLoad", map);
+            emitEvent("onMapDidLoad",map);
         });
     }
 
     // MARK: Prop set methods
     public void setBasemapUrl(String url) {
         basemapUrl = url;
-        if (basemapUrl == null || basemapUrl.isEmpty()) {
+        if(basemapUrl == null || basemapUrl.isEmpty()) {
             return;
         }
         // Set basemap of map
@@ -132,15 +156,29 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
         // If no points exist, add a sample point
         if (points.size() == 0) {
-            points.add(new Point(36.244797, -94.148060, SpatialReferences.getWgs84()));
+            points.add(new Point(36.244797,-94.148060, SpatialReferences.getWgs84()));
         }
         if (points.size() == 1) {
-            mapView.getMap().setInitialViewpoint(new Viewpoint(points.get(0), 10000));
+            mapView.getMap().setInitialViewpoint(new Viewpoint(points.get(0),10000));
         } else {
             Polygon polygon = new Polygon(new PointCollection(points));
             Viewpoint viewpoint = viewpointFromPolygon(polygon);
             mapView.getMap().setInitialViewpoint(viewpoint);
         }
+    }
+
+    public void setMinZoom(Double value) {
+        minZoom = value;
+        mapView.getMap().setMinScale(minZoom);
+    }
+    
+    public void setMaxZoom(Double value) {
+        maxZoom = value;
+        mapView.getMap().setMaxScale(maxZoom);
+    }
+
+    public void setRotationEnabled(Boolean value) {
+        rotationEnabled = value;
     }
 
     // MARK: Exposed RN Methods
@@ -158,30 +196,26 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         String text = "";
         Boolean shouldRecenter = false;
 
-        if (args.hasKey("title")) {
+        if(args.hasKey("title")) {
             title = args.getString("title");
         }
-        if (args.hasKey("text")) {
+        if(args.hasKey("text")) {
             text = args.getString("text");
         }
-        if (args.hasKey("shouldRecenter")) {
+        if(args.hasKey("shouldRecenter")) {
             shouldRecenter = args.getBoolean("shouldRecenter");
         }
 
         // Displaying the callout
         Point agsPoint = new Point(longitude, latitude, SpatialReferences.getWgs84());
-        Callout callout = mapView.getCallout();
-        View calloutContent = mapView.getCallout().getContent();
-        if (calloutContent == null) {
-            calloutContent = inflate(getContext().getApplicationContext(), R.layout.rnags_callout_content, null);
-        }
+
         // Set callout content
+        View calloutContent = callout.getContent();
         ((TextView) calloutContent.findViewById(R.id.title)).setText(title);
         ((TextView) calloutContent.findViewById(R.id.text)).setText(text);
-        callout.setContent(calloutContent);
         callout.setLocation(agsPoint);
         callout.show();
-
+        Log.i("AGS",callout.isShowing()+" " + calloutContent.getWidth() + " " + calloutContent.getHeight());
         if (shouldRecenter) {
             mapView.setViewpointCenterAsync(agsPoint);
         }
@@ -189,21 +223,21 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     public void centerMap(ReadableArray args) {
         final ArrayList<Point> points = new ArrayList<>();
-        for (int i = 0; i < args.size(); i++) {
+        for (int i = 0; i <  args.size(); i++) {
             ReadableMap item = args.getMap(i);
             if (item == null) {
                 continue;
             }
             Double latitude = item.getDouble("latitude");
             Double longitude = item.getDouble("longitude");
-            if (latitude == 0 || longitude == 0) {
+            if(latitude == 0 || longitude == 0) {
                 continue;
             }
             points.add(new Point(longitude, latitude, SpatialReferences.getWgs84()));
         }
         // Perform the recentering
         if (points.size() == 1) {
-            mapView.setViewpointCenterAsync(points.get(0), 60000);
+            mapView.setViewpointCenterAsync(points.get(0),60000);
         } else if (points.size() > 1) {
             PointCollection pointCollection = new PointCollection(points);
             Polygon polygon = new Polygon(pointCollection);
@@ -238,7 +272,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
         String overlayReferenceId = args.getString("overlayReferenceId");
         RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
-        if (overlay != null && args.hasKey("updates")) {
+        if (overlay != null && args.hasKey("updates")){
             overlay.updateGraphics(args.getArray("updates"));
         }
     }
@@ -289,9 +323,9 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         String overlayReferenceId = args.getString("overlayReferenceId");
         RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
         ArrayList<String> removeGraphics = new ArrayList<>();
-        if (args.hasKey("excludeGraphics")) {
+        if(args.hasKey("excludeGraphics")) {
             ReadableArray rawArray = args.getArray("excludeGraphics");
-            for (Object item : rawArray.toArrayList()) {
+            for (Object item: rawArray.toArrayList()) {
                 removeGraphics.add(((String) item));
             }
         }
@@ -302,7 +336,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             color = "#FF0000";
         }
         assert overlay != null;
-        ListenableFuture<RouteResult> future = router.createRoute(overlay.getAGSGraphicsOverlay(), removeGraphics);
+        ListenableFuture<RouteResult> future = router.createRoute(overlay.getAGSGraphicsOverlay(),removeGraphics);
         if (future == null) {
             Log.w("Warning (AGS)", "There was an issue creating the route. Please try again later, or check your routing server.");
             return;
@@ -315,7 +349,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                     Route route = result.getRoutes().get(0);
                     drawRoute(route, color);
                 }
-            } catch (Exception e) {
+            } catch(Exception e) {
                 e.printStackTrace();
             } finally {
                 setIsRouting(false);
@@ -324,7 +358,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     private void setIsRouting(Boolean value) {
-        ((ReactContext) getContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("isRoutingChanged", value);
+        ((ReactContext) getContext()).getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("isRoutingChanged",value);
     }
 
     private void drawRoute(Route route, String color) {
@@ -333,9 +367,9 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             return;
         }
         routeGraphicsOverlay.getGraphics().clear();
-        SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor(color), 5);
+        SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.parseColor(color),5);
         Polyline polyline = route.getRouteGeometry();
-        Graphic routeGraphic = new Graphic(route.getRouteGeometry(), symbol);
+        Graphic routeGraphic = new Graphic(route.getRouteGeometry(),symbol);
         routeGraphicsOverlay.getGraphics().add(routeGraphic);
     }
 
@@ -351,22 +385,30 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     // MARK: OnTouchListener
     public class OnSingleTouchListener extends DefaultMapViewOnTouchListener {
-        OnSingleTouchListener(Context context, MapView mMapView) {
-            super(context, mMapView);
+        OnSingleTouchListener(Context context, MapView mMapView){
+            super(context,mMapView);
         }
 
         @Override
+        public boolean onRotate(MotionEvent event, double rotationAngle) {
+            if (rotationEnabled) {
+                return super.onRotate(event, rotationAngle);
+            } else {
+                return true;
+            }
+        }
+        @Override
         public boolean onDown(MotionEvent e) {
             WritableMap map = createPointMap(e);
-            emitEvent("onMapMoved", map);
+            emitEvent("onMapMoved",map);
             return true;
         }
 
-        private WritableMap createPointMap(MotionEvent e) {
+        private WritableMap createPointMap(MotionEvent e){
             android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
             WritableMap screenPointMap = Arguments.createMap();
-            screenPointMap.putInt("x", screenPoint.x);
-            screenPointMap.putInt("y", screenPoint.y);
+            screenPointMap.putInt("x",screenPoint.x);
+            screenPointMap.putInt("y",screenPoint.y);
             Point mapPoint = mMapView.screenToLocation(screenPoint);
             WritableMap mapPointMap = Arguments.createMap();
             if (mapPoint != null) {
@@ -376,7 +418,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             }
             WritableMap map = Arguments.createMap();
             map.putMap("screenPoint", screenPointMap);
-            map.putMap("mapPoint", mapPointMap);
+            map.putMap("mapPoint",mapPointMap);
             return map;
         }
 
@@ -386,7 +428,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
 
 
-            ListenableFuture<List<IdentifyGraphicsOverlayResult>> future = mMapView.identifyGraphicsOverlaysAsync(screenPoint, 15, false);
+            ListenableFuture<List<IdentifyGraphicsOverlayResult>> future = mMapView.identifyGraphicsOverlaysAsync(screenPoint,15, false);
             future.addDoneListener(() -> {
                 try {
                     if (!future.get().isEmpty()) {
@@ -405,7 +447,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 } catch (InterruptedException | ExecutionException exception) {
                     exception.printStackTrace();
                 } finally {
-                    emitEvent("onSingleTap", map);
+                    emitEvent("onSingleTap",map);
                 }
             });
 

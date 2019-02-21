@@ -22,6 +22,9 @@ class ArcGISMapView extends React.Component {
   static propTypes = {
     basemapUrl: PropTypes.string,
     initialMapCenter: PropTypes.arrayOf(PropTypes.object),
+    minZoom: PropTypes.number,
+    maxZoom: PropTypes.number,
+    rotationEnabled: PropTypes.bool,
     routeUrl: PropTypes.string,
     onOverlayWasAdded: PropTypes.func,
     onOverlayWasRemoved:  PropTypes.func,
@@ -35,6 +38,9 @@ class ArcGISMapView extends React.Component {
     initialMapCenter: [
       {latitude: 36.244797, longitude: -94.148060}
     ],
+    minZoom: 0,
+    maxZoom: 0,
+    rotationEnabled: true,
     basemapUrl: '',
     onSingleTap: () => { },
     onOverlayWasAdded: () => { },

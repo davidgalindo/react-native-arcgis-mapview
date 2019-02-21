@@ -56,24 +56,40 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     }
 
     @ReactProp(name = "recenterIfGraphicTapped", defaultBoolean = false)
-    public void setRecenterIfGraphicTapped(RNAGSMapView view, Boolean value) {
+    public void setRecenterIfGraphicTapped(RNAGSMapView view, Boolean value){
         view.setRecenterIfGraphicTapped(value);
     }
+
+    @ReactProp(name= "minZoom")
+    public void setMinZoom(RNAGSMapView view, double value) {
+        view.setMinZoom(value);
+    }
+
+    @ReactProp(name= "maxZoom")
+    public void setMaxZoom(RNAGSMapView view, double value) {
+        view.setMaxZoom(value);
+    }
+
+    @ReactProp(name= "rotationEnabled")
+    public void setRotationEnabled(RNAGSMapView view, Boolean value) {
+        view.setRotationEnabled(value);
+    }
+
 
     // MARK: RN Methods
     @Override
     public Map<String, Integer> getCommandsMap() {
         Map<String, Integer> map = MapBuilder.of(
-                "showCalloutViaManager", SHOW_CALLOUT,
+                "showCalloutViaManager",SHOW_CALLOUT,
                 "centerMapViaManager", CENTER_MAP,
                 "addGraphicsOverlayViaManager", ADD_GRAPHICS_OVERLAY,
-                "removeGraphicsOverlayViaManager", REMOVE_GRAPHICS_OVERLAY,
-                "addPointsToOverlayViaManager", ADD_POINTS_TO_OVERLAY,
+                "removeGraphicsOverlayViaManager",REMOVE_GRAPHICS_OVERLAY,
+                "addPointsToOverlayViaManager",ADD_POINTS_TO_OVERLAY,
                 "removePointsFromOverlayViaManager", REMOVE_POINTS_FROM_OVERLAY,
                 "updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY
         );
         // Ran out of space in the constructor lol
-        map.put("routeGraphicsOverlayViaManager", ROUTE_GRAPHICS_OVERLAY);
+        map.put("routeGraphicsOverlayViaManager",ROUTE_GRAPHICS_OVERLAY);
         map.put("setRouteIsVisible", SET_ROUTE_IS_VISIBLE);
         map.put("dispose", DISPOSE);
         return map;
@@ -84,35 +100,16 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
         Assertions.assertNotNull(mapView);
         Assertions.assertNotNull(args);
         switch (command) {
-            case SHOW_CALLOUT:
-                mapView.showCallout(args.getMap(0));
-                return;
-            case CENTER_MAP:
-                mapView.centerMap(args.getArray(0));
-                return;
-            case ADD_GRAPHICS_OVERLAY:
-                mapView.addGraphicsOverlay(args.getMap(0));
-                return;
-            case REMOVE_GRAPHICS_OVERLAY:
-                mapView.removeGraphicsOverlay(args.getString(0));
-                return;
-            case ADD_POINTS_TO_OVERLAY:
-                mapView.addPointsToOverlay(args.getMap(0));
-                return;
-            case REMOVE_POINTS_FROM_OVERLAY:
-                mapView.removePointsFromOverlay(args.getMap(0));
-                return;
-            case UPDATE_POINTS_IN_GRAPHICS_OVERLAY:
-                mapView.updatePointsInGraphicsOverlay(args.getMap(0));
-                return;
-            case ROUTE_GRAPHICS_OVERLAY:
-                mapView.routeGraphicsOverlay(args.getMap(0));
-                return;
-            case SET_ROUTE_IS_VISIBLE:
-                mapView.setRouteIsVisible(args.getBoolean(0));
-                return;
-            case DISPOSE:
-                mapView.onHostDestroy();
+            case SHOW_CALLOUT: mapView.showCallout(args.getMap(0));return;
+            case CENTER_MAP: mapView.centerMap(args.getArray(0));return;
+            case ADD_GRAPHICS_OVERLAY: mapView.addGraphicsOverlay(args.getMap(0));return;
+            case REMOVE_GRAPHICS_OVERLAY: mapView.removeGraphicsOverlay(args.getString(0));return;
+            case ADD_POINTS_TO_OVERLAY: mapView.addPointsToOverlay(args.getMap(0));return;
+            case REMOVE_POINTS_FROM_OVERLAY: mapView.removePointsFromOverlay(args.getMap(0));return;
+            case UPDATE_POINTS_IN_GRAPHICS_OVERLAY: mapView.updatePointsInGraphicsOverlay(args.getMap(0));return;
+            case ROUTE_GRAPHICS_OVERLAY: mapView.routeGraphicsOverlay(args.getMap(0));return;
+            case SET_ROUTE_IS_VISIBLE: mapView.setRouteIsVisible(args.getBoolean(0));return;
+            case DISPOSE: mapView.onHostDestroy();
         }
     }
 

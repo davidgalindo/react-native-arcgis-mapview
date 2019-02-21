@@ -317,6 +317,24 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         }// end didSet
     }// end initialMapCenter declaration
     
+    @objc var minZoom:NSNumber = 0 {
+        didSet{
+            self.map?.minScale = minZoom.doubleValue
+        }
+    }
+    
+    @objc var maxZoom:NSNumber = 0 {
+        didSet{
+            self.map?.maxScale = maxZoom.doubleValue
+        }
+    }
+    
+    @objc var rotationEnabled = true{
+        didSet{
+            self.interactionOptions.isRotateEnabled = rotationEnabled
+        }
+    };
+
     // MARK: Misc.
     private func getOverlay(byReferenceId referenceId: NSString?) -> RNAGSGraphicsOverlay? {
         if let referenceId = referenceId {
