@@ -182,8 +182,8 @@ addPointsToOverlay | `{ overlayReferenceId: String, points: [Point] }` | Adds po
 removePointsFromOverlay | `{ overlayReferenceId: String, referenceIds: [String] }` | Removes points from the overlay with the given overlayReferenceID. The reference ID array are the IDs of the points you wish to remove.
 updatePointsOnOverlay | `{ overlayReferenceId: String, updates: [Point] }` | Updates points on a given overlay. All properties within an individual Point object are optional, though latitude and longitude must both be provided if you are updating either one.
 routeGraphicsOverlay | `{ overlayReferenceId: String, excludeGraphics: [String]?, routeColor: String? }` | Routes a one-way route from all points within the overlay associated with the overlayReferenceId. You can exclude points by ID by placing their IDs inside the excludeGraphics array. See below for more info.
-getRouteIsVisibleViaManager | ` {callback: Callback(Boolean)} ` | Returns the visibility of the route layer and passes it through a callback.
-setRouteIsVisibleViaManager | `{ args: Boolean }` | Toggles the visiblity of the routing layer. 
+getRouteIsVisible | ` {callback: Callback(Boolean)} ` | Returns the visibility of the route layer and passes it through a callback.
+setRouteIsVisible | `{ args: Boolean }` | Toggles the visiblity of the routing layer. 
 ##### The Point Object
 Above, the Point object was referenced as 'Point.' The Point object is structured as follows:
 ```javascript
