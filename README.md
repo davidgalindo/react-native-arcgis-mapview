@@ -118,7 +118,7 @@ end
 If you already have a podfile, this is the key line you need to add:
 `pod 'RNArcGISMapView', :path => "../node_modules/react-native-arcgis-mapview/ios"`
 
-If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a briding header. **CHOOSE CREATE!!** (We do this so XCode knows we will be using Swift within our project). Then, open your project file and ensure your iOS Project targets iOS 11 or above and the Swift Language Version is set to 'Swift 4.2.' Clean, rebuild, and you should be good to go.
+If you don't have swift implemented into your project, open your project directory and make a new Swift file. Name it whatever you want, it doesn't matter. Upon making this file, XCode should ask if you want to create a bridging header. If you plan on using Swift in your project, selecte 'Create Header'; otherwise, select no thanks. Then, open your project file and ensure your iOS Project targets iOS 11 or above and the Swift Language Version is set to 'Swift 4.2.' Clean, rebuild, and you should be good to go.
 
 ### License your map
 A license is not required to develop and test. However, to release your app, you must provide a license. See [here for iOS](https://developers.arcgis.com/ios/latest/swift/guide/license-your-app.htm) or [here for Android](https://developers.arcgis.com/android/latest/guide/license-your-app.htm) for more information on how to get a license.
@@ -163,7 +163,7 @@ onOverlayWasAdded | `{ referenceId: String }` | Called when overlay is added.
 onOverlayWasRemoved | `{ referenceId: String }` | Called when overlay is removed.
 onOverlayWasModified | `{ referenceId: String, action: String, success: Boolean, errorMessage: String? }` | Fires when an overlay was modified. 
 onMapDidLoad | `{ success: Boolean, errorMessage: String? }` | Executed when the map finishes loading or runs into an error.
-
+onRoutingStatusUpdate | `value: Boolean` | Returns true or false whenever the app begins or ends a routing call. Useful for telling the user when a routing action is happening in the background.
 
 
 
@@ -240,7 +240,7 @@ pointGraphics: [
 ##### Routing
 For routing to work, you must also pass in a routeUrl prop with a reference to a routing service. Check the [Choosing a routing data source](https://developers.arcgis.com/android/latest/guide/find-a-route.htm) section of this Esri Article for information on how to make one. 
 
-Once you have a routing URL, try calling `routeGraphicsOverlay` to see if your routing service has been configuired correctly. If it doesn't work, chances are your URL doesn't have the necessary permissions set. Make sure it has public access. Also, note that longer routes may take longer to generate. On Android, this hangs the UI Thread due to the drawing required; on iOS, it simply doesn't show until it's completely drawn out. Hopefully this will be optimized in a future update.
+Once you have a routing URL, try calling `routeGraphicsOverlay` to see if your routing service has been configuired correctly. If it doesn't work, chances are your URL doesn't have the necessary permissions set. Make sure it has public access. Note that routing is an asynchronous task, and for longer routes, this may take a moment. Use the `onRoutingStatusUpdate` callback to create any UI you may need to inform the user that a route calculation is currently taking place.
 
 The biggest gotcha, however, is that routing uses up [ArcGIS Online Credits](https://www.esri.com/en-us/arcgis/products/arcgis-online/pricing/credits). You are given 50 free credits a month; however, you must buy additional credits to continue routing. Make sure your ArcGIS Online account has sufficient credits before release.
 
