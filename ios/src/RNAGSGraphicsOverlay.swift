@@ -16,6 +16,7 @@ import ArcGIS
 public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
     var pointImageDictionary: [NSString: UIImage]
     let referenceId: NSString
+    var shouldAnimateUpdate: Bool = false
     
     // MARK: Initializer
     init(rawData: NSDictionary){

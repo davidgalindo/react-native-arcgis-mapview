@@ -24,6 +24,7 @@ public class RNAGSGraphicsOverlay {
     private GraphicsOverlay graphicsOverlay;
     private HashMap<String, String> pointImageDictionary;
     private String referenceId;
+    private Boolean shouldAnimateUpdate = false;
 
     public RNAGSGraphicsOverlay(ReadableMap rawData, GraphicsOverlay graphicsOverlay) {
         this.referenceId = rawData.getString("referenceId");
@@ -57,6 +58,10 @@ public class RNAGSGraphicsOverlay {
     }
 
     public void updateGraphics(ReadableArray args) {
+        shouldAnimateUpdate = false;
+        if (args.hasKey("animated")) {
+            shouldAnimateUpdate = args.getBoolean("animated");
+        }
         for (int i = 0; i < args.size(); i++) {
             updateGraphicLoop(args.getMap(i));
         }
@@ -65,7 +70,6 @@ public class RNAGSGraphicsOverlay {
     private void updateGraphicLoop(ReadableMap args) {
         // Establish variables
         com.esri.arcgisruntime.geometry.Point agsPoint = null;
-        Boolean animated = false;
         // Get references
         String referenceId = args.getString("referenceId");
         Map<String, Object> attributes = null;
@@ -101,7 +105,7 @@ public class RNAGSGraphicsOverlay {
         if (args.hasKey("rotation")) {
             rotation = args.getDouble("rotation");
         }
-        if (!animated) {
+        if (shouldAnimateUpdate) {
             Float initialRotation = (graphic.getSymbol() != null && graphic.getSymbol() instanceof PictureMarkerSymbol) ?
                     ((PictureMarkerSymbol) graphic.getSymbol()).getAngle() : 0;
             animateUpdate(graphic, ((com.esri.arcgisruntime.geometry.Point) graphic.getGeometry()), agsPoint, initialRotation, rotation.floatValue());
