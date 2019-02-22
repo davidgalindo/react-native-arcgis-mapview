@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
@@ -15,6 +17,8 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RNAGSGraphicsOverlay {
     private GraphicsOverlay graphicsOverlay;
@@ -61,21 +65,21 @@ public class RNAGSGraphicsOverlay {
     private void updateGraphicLoop(ReadableMap args) {
         // Establish variables
         com.esri.arcgisruntime.geometry.Point agsPoint = null;
+        Boolean animated = false;
         // Get references
         String referenceId = args.getString("referenceId");
         Map<String, Object> attributes = null;
+        Double rotation = 0.0;
 
         // Once we have all the required values, we change them
         Graphic graphic = ArrayHelper.graphicViaReferenceId(graphicsOverlay, referenceId);
         if (graphic == null) {
             return;
         }
-        if (args.hasKey("latitude") && args.hasKey("longitude")) {
-            Double latitude = args.getDouble("latitude");
-            Double longitude = args.getDouble("longitude");
-            agsPoint = new com.esri.arcgisruntime.geometry.Point(longitude, latitude, SpatialReferences.getWgs84());
-            graphic.setGeometry(agsPoint);
+        if (args.hasKey("animated")) {
+            animated = args.getBoolean("animated");
         }
+
         if (args.hasKey("attributes")) {
             attributes = RNAGSGraphicsOverlay.readableMapToMap(args.getMap("attributes"));
             graphic.getAttributes().putAll(attributes);
@@ -89,11 +93,65 @@ public class RNAGSGraphicsOverlay {
                 graphic.setSymbol(symbol);
             }
         }
+        if (args.hasKey("latitude") && args.hasKey("longitude")) {
+            Double latitude = args.getDouble("latitude");
+            Double longitude = args.getDouble("longitude");
+            agsPoint = new com.esri.arcgisruntime.geometry.Point(longitude, latitude, SpatialReferences.getWgs84());
+        }
         if (args.hasKey("rotation")) {
-            Double rotation = args.getDouble("rotation");
+            rotation = args.getDouble("rotation");
+        }
+        if (!animated) {
+            Float initialRotation = (graphic.getSymbol() != null && graphic.getSymbol() instanceof PictureMarkerSymbol) ?
+                    ((PictureMarkerSymbol) graphic.getSymbol()).getAngle() : 0;
+            animateUpdate(graphic, ((com.esri.arcgisruntime.geometry.Point) graphic.getGeometry()), agsPoint, initialRotation, rotation.floatValue());
+
+        } else {
+            graphic.setGeometry(agsPoint);
             ((PictureMarkerSymbol) graphic.getSymbol()).setAngle(rotation.floatValue());
         }
         // End of updates
+
+    }
+
+    private int maxTimesFired = 10;
+    private int timerDuration = 500;
+    private void animateUpdate(Graphic graphic, com.esri.arcgisruntime.geometry.Point fromPoint, com.esri.arcgisruntime.geometry.Point toPoint,
+                               Float fromRotation, Float toRotation){
+        // Run animation
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Double dx = (toPoint.getX() - fromPoint.getX()) / maxTimesFired;
+                Double dy = (toPoint.getY() - fromPoint.getY()) / maxTimesFired;
+                Float dTheta = (toRotation - fromRotation) / maxTimesFired;
+                PictureMarkerSymbol  symbol = null;
+                if (graphic.getSymbol() instanceof PictureMarkerSymbol) {
+                    symbol = ((PictureMarkerSymbol) graphic.getSymbol());
+                }
+
+                for(int timesFired = 0; timesFired < maxTimesFired; timesFired++) {
+                    Double x = fromPoint.getX() + (dx * timesFired);
+                    Double y = fromPoint.getY() + (dy * timesFired);
+                    Float rotation = fromRotation + (dTheta * timesFired);
+                    graphic.setGeometry(new com.esri.arcgisruntime.geometry.Point(x,y,SpatialReferences.getWgs84()));
+                    if (symbol != null) {
+                        symbol.setAngle(rotation);
+                    }
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                }
+                graphic.setGeometry(toPoint);
+                if (symbol != null) {
+                    symbol.setAngle(toRotation);
+                }
+                timer.cancel();
+            }
+        },0,timerDuration);
 
     }
 

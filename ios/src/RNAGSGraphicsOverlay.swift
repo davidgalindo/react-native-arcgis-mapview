@@ -49,7 +49,7 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
             return
         }
         // Look for graphic within graphics
-        guard var graphic = self.graphics.first(where: { (item) -> Bool in
+        guard let graphic = self.graphics.first(where: { (item) -> Bool in
             return (item as! AGSGraphic).attributes["referenceId"] as! NSString == referenceId
         }) as? AGSGraphic else {
             // No result found, nothing to update
@@ -61,6 +61,7 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
         let originalPosition = graphic.geometry as! AGSPoint
         let attributes = args["attributes"] as? [NSString: Any]
         let rotation = args["rotation"] as? NSNumber
+        let animated = args["animated"] as? ObjCBool
         let rawLocationData = CLLocationCoordinate2D(latitude: latitude?.doubleValue ?? originalPosition.x, longitude: longitude?.doubleValue ?? originalPosition.y)
         let graphicPoint = AGSPoint(clLocationCoordinate2D: rawLocationData)
         
@@ -68,21 +69,57 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
         if let graphicId = args["graphicId"] as? NSString, let newImage = pointImageDictionary[graphicId] {
             let symbol = AGSPictureMarkerSymbol(image: newImage)
             // update location and graphic
-            graphic = AGSGraphic(geometry: graphicPoint, symbol: symbol, attributes: graphic.attributes as? [String: Any])
-        } else {
-            // Only update location here
-            graphic.geometry = graphicPoint
+            graphic.symbol = symbol
+            
         }
-        // Rotation
-        if let rotation = rotation?.floatValue {
-            (graphic.symbol as? AGSPictureMarkerSymbol)?.angle = rotation
+        // Update geometry here
+        let fromPoint = graphic.geometry as! AGSPoint
+        let fromRotation = (graphic.symbol as? AGSPictureMarkerSymbol)?.angle
+        if (animated?.boolValue ?? false) {
+            update(graphic: graphic, fromPoint: fromPoint, toPoint: graphicPoint, fromRotation: fromRotation ?? 0, toRotation: rotation?.floatValue ?? 0)
+        } else {
+            // Update rotation and geometry without animation
+            graphic.geometry = graphicPoint
+            if let rotation = rotation?.floatValue {
+                (graphic.symbol as? AGSPictureMarkerSymbol)?.angle = rotation
+            }
         }
         // Attributes
         if let attributes = attributes {
             graphic.attributes.addEntries(from: attributes)
         }
         // End of updates
+        
     }
+    
+    let timerDuration: Double = 0.5
+    var timer = Timer()
+    private static let timerFireMax:NSNumber = 10.0
+    // Here we will animate the movement of a point - both position and angle
+    private func update(graphic: AGSGraphic, fromPoint: AGSPoint, toPoint:AGSPoint, fromRotation: Float, toRotation: Float){
+        let dx = (toPoint.x - fromPoint.x) / RNAGSGraphicsOverlay.timerFireMax.doubleValue
+        let dy = (toPoint.y - fromPoint.y) / RNAGSGraphicsOverlay.timerFireMax.doubleValue
+        let dTheta = (toRotation - fromRotation) / RNAGSGraphicsOverlay.timerFireMax.floatValue
+        let symbol = graphic.symbol as? AGSPictureMarkerSymbol
+        var timesFired = 0.0
+        Timer.scheduledTimer(withTimeInterval: timerDuration / RNAGSGraphicsOverlay.timerFireMax.doubleValue, repeats: true, block: {
+            if (timesFired < RNAGSGraphicsOverlay.timerFireMax.doubleValue) {
+                let x = fromPoint.x + (dx * timesFired)
+                let y = fromPoint.y + (dy * timesFired)
+                let rotation = Double(fromRotation) + (Double(dTheta) * timesFired)
+                graphic.geometry = AGSPoint(x: x, y: y, spatialReference: AGSSpatialReference.wgs84())
+                symbol?.angle = Float(rotation)
+                timesFired += 1.0
+            } else {
+                graphic.geometry = toPoint
+                symbol?.angle = toRotation
+                $0.invalidate()
+            }
+        })
+    }
+    
+    
+    
     
     // MARK: Static methods
     public static func rnPointToAGSGraphic(_ point: Point, pointImageDictionary: [NSString: UIImage]?) -> AGSGraphic{
