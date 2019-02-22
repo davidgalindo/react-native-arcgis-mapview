@@ -166,7 +166,7 @@ onOverlayWasAdded | `{ referenceId: String }` | Called when overlay is added.
 onOverlayWasRemoved | `{ referenceId: String }` | Called when overlay is removed.
 onOverlayWasModified | `{ referenceId: String, action: String, success: Boolean, errorMessage: String? }` | Fires when an overlay was modified. 
 onMapDidLoad | `{ success: Boolean, errorMessage: String? }` | Executed when the map finishes loading or runs into an error.
-onRoutingStatusUpdate | `value: Boolean` | Returns true or false whenever the app begins or ends a routing call. Useful for telling the user when a routing action is happening in the background.
+onRoutingStatusUpdate | `isRouting: Boolean` | Returns true or false whenever the app begins or ends a routing call. Useful for telling the user when a routing action is happening in the background.
 
 
 
@@ -183,7 +183,7 @@ removePointsFromOverlay | `{ overlayReferenceId: String, referenceIds: [String] 
 updatePointsOnOverlay | `{ overlayReferenceId: String, updates: [Point] }` | Updates points on a given overlay. All properties within an individual Point object are optional, though latitude and longitude must both be provided if you are updating either one.
 routeGraphicsOverlay | `{ overlayReferenceId: String, excludeGraphics: [String]?, routeColor: String? }` | Routes a one-way route from all points within the overlay associated with the overlayReferenceId. You can exclude points by ID by placing their IDs inside the excludeGraphics array. See below for more info.
 getRouteIsVisible | ` {callback: Callback(Boolean)} ` | Returns the visibility of the route layer and passes it through a callback.
-setRouteIsVisible | `{ args: Boolean }` | Toggles the visiblity of the routing layer. 
+setRouteIsVisible | `{ routeIsVisible: Boolean }` | Toggles the visiblity of the routing layer. 
 ##### The Point Object
 Above, the Point object was referenced as 'Point.' The Point object is structured as follows:
 ```javascript
