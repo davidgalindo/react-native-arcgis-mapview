@@ -57,11 +57,11 @@ public class RNAGSGraphicsOverlay {
         return referenceId;
     }
 
+    public void setShouldAnimateUpdate(Boolean value) {
+        shouldAnimateUpdate = value;
+    }
+
     public void updateGraphics(ReadableArray args) {
-        shouldAnimateUpdate = false;
-        if (args.hasKey("animated")) {
-            shouldAnimateUpdate = args.getBoolean("animated");
-        }
         for (int i = 0; i < args.size(); i++) {
             updateGraphicLoop(args.getMap(i));
         }
@@ -79,9 +79,6 @@ public class RNAGSGraphicsOverlay {
         Graphic graphic = ArrayHelper.graphicViaReferenceId(graphicsOverlay, referenceId);
         if (graphic == null) {
             return;
-        }
-        if (args.hasKey("animated")) {
-            animated = args.getBoolean("animated");
         }
 
         if (args.hasKey("attributes")) {

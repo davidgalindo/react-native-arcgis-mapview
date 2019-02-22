@@ -198,7 +198,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
             reportToOverlayDidLoadListener(referenceId: args["overlayReferenceId"] as? NSString ?? NSString(string: "Unknown"), action: "update", success: false, errorMessage: "Invalid layer name entered.")
             return
         }
-        let shouldAnimateUpdate = (args["animated"] as? ObjCBool)?.boolValue ?? false
+        let shouldAnimateUpdate = (args["animated"] as? Bool) ?? false
         overlay.shouldAnimateUpdate = shouldAnimateUpdate
         if let updates = args["updates"] as? [NSDictionary] {
             for update in updates {

@@ -270,9 +270,14 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
             return;
         }
+        Boolean shouldAnimateUpdate = false;
+        if(args.hasKey("animated")) {
+            shouldAnimateUpdate = args.getBoolean("animated");
+        }
         String overlayReferenceId = args.getString("overlayReferenceId");
         RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
         if (overlay != null && args.hasKey("updates")){
+            overlay.setShouldAnimateUpdate(shouldAnimateUpdate);
             overlay.updateGraphics(args.getArray("updates"));
         }
     }

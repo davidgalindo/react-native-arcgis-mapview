@@ -62,7 +62,6 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
         let originalPosition = graphic.geometry as! AGSPoint
         let attributes = args["attributes"] as? [NSString: Any]
         let rotation = args["rotation"] as? NSNumber
-        let animated = args["animated"] as? ObjCBool
         let rawLocationData = CLLocationCoordinate2D(latitude: latitude?.doubleValue ?? originalPosition.x, longitude: longitude?.doubleValue ?? originalPosition.y)
         let graphicPoint = AGSPoint(clLocationCoordinate2D: rawLocationData)
         
@@ -76,7 +75,7 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
         // Update geometry here
         let fromPoint = graphic.geometry as! AGSPoint
         let fromRotation = (graphic.symbol as? AGSPictureMarkerSymbol)?.angle
-        if (animated?.boolValue ?? false) {
+        if (shouldAnimateUpdate) {
             update(graphic: graphic, fromPoint: fromPoint, toPoint: graphicPoint, fromRotation: fromRotation ?? 0, toRotation: rotation?.floatValue ?? 0)
         } else {
             // Update rotation and geometry without animation
