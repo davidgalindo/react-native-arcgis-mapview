@@ -41,7 +41,7 @@ render() {
 
 # Installation Instructions
 ### Install the package and link it
-`yarn install react-native-arcgis-mapview` or `npm install react-native-arcgis-mapview`
+`yarn add react-native-arcgis-mapview` or `npm install react-native-arcgis-mapview`
 
 Then run `react-native link react-native-arcgis-mapview`
 
