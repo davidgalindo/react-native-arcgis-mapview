@@ -1,6 +1,8 @@
 package com.davidgalindo.rnarcgismapview;
 
-import android.support.annotation.Nullable;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
@@ -18,6 +20,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     private final int ADD_GRAPHICS_OVERLAY = 3;
     private final int REMOVE_GRAPHICS_OVERLAY = 4;
     private final int ADD_POINTS_TO_OVERLAY = 5;
+    private final int ADD_SKETCH_TO_MAP = 10;
     private final int REMOVE_POINTS_FROM_OVERLAY = 6;
     private final int UPDATE_POINTS_IN_GRAPHICS_OVERLAY = 7;
     private final int ROUTE_GRAPHICS_OVERLAY = 8;
@@ -79,6 +82,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     // MARK: RN Methods
     @Override
     public Map<String, Integer> getCommandsMap() {
+
         Map<String, Integer> map = MapBuilder.of(
                 "showCalloutViaManager",SHOW_CALLOUT,
                 "centerMapViaManager", CENTER_MAP,
@@ -86,17 +90,20 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
                 "removeGraphicsOverlayViaManager",REMOVE_GRAPHICS_OVERLAY,
                 "addPointsToOverlayViaManager",ADD_POINTS_TO_OVERLAY,
                 "removePointsFromOverlayViaManager", REMOVE_POINTS_FROM_OVERLAY,
-                "updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY
+                "addSketchToMapViaManager", ADD_SKETCH_TO_MAP
+//                "updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY
         );
         // Ran out of space in the constructor lol
         map.put("routeGraphicsOverlayViaManager",ROUTE_GRAPHICS_OVERLAY);
         map.put("setRouteIsVisible", SET_ROUTE_IS_VISIBLE);
         map.put("dispose", DISPOSE);
+//        map.put("addSketchToMapViaManager", ADD_SKETCH_TO_MAP);
         return map;
     }
 
     @Override
     public void receiveCommand(RNAGSMapView mapView, int command, ReadableArray args) {
+        Log.d("RNAGSMapView", "receiveCommand: "+command+args);
         Assertions.assertNotNull(mapView);
         Assertions.assertNotNull(args);
         switch (command) {
@@ -106,6 +113,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
             case REMOVE_GRAPHICS_OVERLAY: mapView.removeGraphicsOverlay(args.getString(0));return;
             case ADD_POINTS_TO_OVERLAY: mapView.addPointsToOverlay(args.getMap(0));return;
             case REMOVE_POINTS_FROM_OVERLAY: mapView.removePointsFromOverlay(args.getMap(0));return;
+            case ADD_SKETCH_TO_MAP: mapView.addSketchToMap((args.getInt(0)));return;
             case UPDATE_POINTS_IN_GRAPHICS_OVERLAY: mapView.updatePointsInGraphicsOverlay(args.getMap(0));return;
             case ROUTE_GRAPHICS_OVERLAY: mapView.routeGraphicsOverlay(args.getMap(0));return;
             case SET_ROUTE_IS_VISIBLE: mapView.setRouteIsVisible(args.getBoolean(0));return;
@@ -146,6 +154,11 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
                         MapBuilder.of(
                                 "phasedRegistrationNames",
                                 MapBuilder.of("bubbled", "onMapMoved")))
+                .put(
+                        "onDrawPoligon",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onDrawPoligon")))
                 .build();
     }
 }
