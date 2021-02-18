@@ -71,6 +71,15 @@ class ArcGISMapView extends React.Component {
     );
   }
 
+  addSketchToMap = (pointArray) => {
+    console.log('addSketchToMap ABhishek',pointArray)
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.addSketchToMapViaManager,
+      [pointArray]
+    );
+  }
+
   addGraphicsOverlay = (overlayData) => {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
@@ -149,7 +158,7 @@ class ArcGISMapView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
       UIManager.getViewManagerConfig('RNArcGISMapView').Commands.dispose,
-      [args]
+      // [args]
     );
   }
 }
