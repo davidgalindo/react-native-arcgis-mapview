@@ -78,8 +78,57 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         if (context instanceof ReactContext) {
             ((ReactContext) context).addLifecycleEventListener(this);
         }
-        setUpMap();
-        setUpCallout();
+
+        ArcGISMap map = new ArcGISMap(Basemap.Type.LIGHT_GRAY_CANVAS, 34.056295, -117.195800, 16);
+        mapView.setMap(map);
+        routeGraphicsOverlay = new GraphicsOverlay();
+        mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
+        mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
+
+
+        // create a new sketch editor and add it to the map view
+        mSketchEditor = new SketchEditor();
+        mapView.setSketchEditor(mSketchEditor);
+        mSketchEditor.addGeometryChangedListener(new SketchGeometryChangedListener() {
+            @Override
+            public void geometryChanged(SketchGeometryChangedEvent sketchGeometryChangedEvent) {
+                if (sketchGeometryChangedEvent.getGeometry() != null) {
+                    Log.d(TAG, "geometryChanged: " + sketchGeometryChangedEvent.getGeometry().getGeometryType());
+                    try {
+                        switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
+                            case POLYLINE:
+//                                final Polyline wgs84Point = (Polyline) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
+//                                String jsonStr = wgs84Point.toJson();
+//                                JSONObject obj = new JSONObject(jsonStr);
+//                                JSONArray jsonArr = new JSONArray(obj.getString("rings"));
+//                                WritableMap map = Arguments.createMap();
+//                                map.putBoolean("success", true);
+//                                map.putString("response", jsonArr.toString());
+//                                emitEvent("onDrawPoligon", map);
+                                break;
+                            case POLYGON:
+                                final Polygon wgs84Point = (Polygon) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
+                                String jsonStr = wgs84Point.toJson();
+                                Log.d(TAG, "geometryChanged: " + jsonStr);
+                                JSONObject obj = new JSONObject(jsonStr);
+                                JSONArray jsonArr = new JSONArray(obj.getString("rings"));
+                                WritableMap map = Arguments.createMap();
+                                map.putBoolean("success", true);
+                                map.putString("response", jsonArr.toString());
+                                emitEvent("onDrawPoligon", map);
+                                break;
+                            default:
+                                break;
+                        }
+
+                    } catch (JSONException e) {
+
+                    }
+                }
+            }
+        });
+//        setUpMap();
+//        setUpCallout();
     }
 
     private void setUpCallout() {
@@ -425,6 +474,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         future.addDoneListener(() -> {
             try {
                 RouteResult result = future.get();
+                Log.d(TAG, "routeGraphicsOverlay: ");
                 if (result != null && !result.getRoutes().isEmpty()) {
                     Route route = result.getRoutes().get(0);
                     drawRoute(route, color);
@@ -455,7 +505,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     // MARK: Event emitting
     public void emitEvent(String eventName, WritableMap args) {
-        Log.d(TAG, "emitEvent: "+args);
+        Log.d(TAG, "emitEvent: "+args+eventName);
         ((ReactContext) getContext()).getJSModule(RCTEventEmitter.class).receiveEvent(
                 getId(),
                 eventName,
@@ -468,6 +518,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     public class OnSingleTouchListener extends DefaultMapViewOnTouchListener {
         OnSingleTouchListener(Context context, MapView mMapView) {
             super(context, mMapView);
+            Log.d(TAG, "OnSingleTouchListener: ");
+        }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            Log.d(TAG, "onTouch: ");
+            return super.onTouch(view, event);
         }
 
         @Override
