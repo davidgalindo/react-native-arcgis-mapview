@@ -158,7 +158,7 @@ class ArcGISMapView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
       UIManager.getViewManagerConfig('RNArcGISMapView').Commands.dispose,
-      // [args]
+      []
     );
   }
 }
