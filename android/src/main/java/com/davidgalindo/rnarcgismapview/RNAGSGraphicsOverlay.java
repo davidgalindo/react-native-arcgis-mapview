@@ -1,8 +1,6 @@
 package com.davidgalindo.rnarcgismapview;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
@@ -252,8 +250,8 @@ public class RNAGSGraphicsOverlay {
             );
         }
 
-        private Point(@NonNull Double latitude, @NonNull Double longitude, @NonNull Double rotation, @NonNull String referenceId,
-                      @Nullable Map<String, Object> attributes, @Nullable String graphicId) {
+        private Point( Double latitude, Double longitude,  Double rotation, String referenceId,
+                      Map<String, Object> attributes, String graphicId) {
             this.latitude = latitude;
             this.longitude = longitude;
             this.rotation = rotation;
