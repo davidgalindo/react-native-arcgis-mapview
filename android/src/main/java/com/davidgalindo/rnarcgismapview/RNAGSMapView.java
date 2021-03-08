@@ -12,7 +12,9 @@ import android.widget.TextView;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.GeometryType;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
@@ -31,7 +33,9 @@ import com.esri.arcgisruntime.mapping.view.SketchCreationMode;
 import com.esri.arcgisruntime.mapping.view.SketchEditor;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedEvent;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedListener;
+import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.facebook.react.bridge.Arguments;
@@ -65,11 +69,15 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     GraphicsOverlay routeGraphicsOverlay;
     RNAGSRouter router;
     private Callout callout;
+    private SimpleMarkerSymbol mPointSymbol;
+    private SimpleLineSymbol mLineSymbol;
+    private SimpleFillSymbol mFillSymbol;
     Double minZoom = 0.0;
     Double maxZoom = 0.0;
     Boolean rotationEnabled = true;
     private SketchEditor mSketchEditor;
 
+    private SketchGeometryChangedListener sketchGeometryChangedListener;
     // MARK: Initializers
     public RNAGSMapView(Context context) {
         super(context);
@@ -85,11 +93,15 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
         mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
 
+        // define symbols
+        mPointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.parseColor("#2B64F5"), 20);
+        mLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLACK, 2);
+//        mFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.argb(0.2f,245,100,45),mLineSymbol);
 
         // create a new sketch editor and add it to the map view
         mSketchEditor = new SketchEditor();
         mapView.setSketchEditor(mSketchEditor);
-        mSketchEditor.addGeometryChangedListener(new SketchGeometryChangedListener() {
+        sketchGeometryChangedListener = new SketchGeometryChangedListener() {
             @Override
             public void geometryChanged(SketchGeometryChangedEvent sketchGeometryChangedEvent) {
                 if (sketchGeometryChangedEvent.getGeometry() != null) {
@@ -126,7 +138,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                     }
                 }
             }
-        });
+        };
+        mSketchEditor.addGeometryChangedListener(sketchGeometryChangedListener);
 //        setUpMap();
 //        setUpCallout();
     }
@@ -157,6 +170,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         routeGraphicsOverlay = new GraphicsOverlay();
         mSketchEditor = new SketchEditor();
         mapView.setSketchEditor(mSketchEditor);
+
 
         mSketchEditor.addGeometryChangedListener(new SketchGeometryChangedListener() {
             @Override
@@ -418,6 +432,58 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //        }
     }
 
+    public String stopSketchOnMap() {
+        Log.d(TAG, "stopSketchOnMap: ");
+        mSketchEditor.stop();
+//        mSketchEditor.removeGeometryChangedListener(sketchGeometryChangedListener);
+//        mapView.setSketchEditor(mSketchEditor);
+//        stop();
+        return "Stoped";
+    }
+
+    public String stopSketchDrawLayer () {
+        stop();
+        return "Stop Sketch";
+    }
+
+    /**
+     * When the stop button is clicked, check that sketch is valid. If so, get the geometry from the sketch, set its
+     * symbol and add it to the graphics overlay.
+     */
+    private void stop() {
+        if (!mSketchEditor.isSketchValid()) {
+//            reportNotValid();
+            mSketchEditor.stop();
+//            resetButtons();
+            return;
+        }
+
+        // get the geometry from sketch editor
+        Geometry sketchGeometry = mSketchEditor.getGeometry();
+        mSketchEditor.stop();
+//        resetButtons();
+
+        if (sketchGeometry != null) {
+
+            // create a graphic from the sketch editor geometry
+            Graphic graphic = new Graphic(sketchGeometry);
+
+            // assign a symbol based on geometry type
+            if (graphic.getGeometry().getGeometryType() == GeometryType.POLYGON ) {
+                graphic.setSymbol(mFillSymbol);
+            } else if (graphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
+                graphic.setSymbol(mLineSymbol);
+            } else if (graphic.getGeometry().getGeometryType() == GeometryType.POINT ||
+                    graphic.getGeometry().getGeometryType() == GeometryType.MULTIPOINT) {
+                graphic.setSymbol(mPointSymbol);
+            }
+            else
+                graphic.setSymbol(mFillSymbol);
+            // add the graphic to the graphics overlay
+            routeGraphicsOverlay.getGraphics().add(graphic);
+        }
+    }
+
     public void removePointsFromOverlay(ReadableMap args) {
         if (!args.hasKey("overlayReferenceId")) {
             Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
@@ -577,7 +643,11 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                         // More null checking >.>
                         if (!graphicResult.isEmpty()) {
                             Graphic result = graphicResult.get(0);
-                            map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
+                            Log.d(TAG, "onSingleTapConfirmed: "+result+graphicResult);
+                            if (result != null) {
+                                map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
+                            }
+
                             if (recenterIfGraphicTapped) {
                                 mapView.setViewpointCenterAsync(((Point) result.getGeometry()));
                             }
