@@ -72,11 +72,26 @@ class ArcGISMapView extends React.Component {
   }
 
   addSketchToMap = (pointArray) => {
-    console.log('addSketchToMap ABhishek',pointArray)
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
       UIManager.getViewManagerConfig('RNArcGISMapView').Commands.addSketchToMapViaManager,
       [pointArray]
+    );
+  }
+
+  stopSketchOnMap = () => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.stopSketchToMapViaManager,
+      []
+    );
+  }
+
+  stopSketchDrawOverlayManager = () => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.stopSketchDrawOverlayManager,
+      []
     );
   }
 
