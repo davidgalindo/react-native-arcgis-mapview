@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import com.esri.arcgisruntime.mapping.view.SketchCreationMode;
 import com.esri.arcgisruntime.mapping.view.SketchEditor;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedEvent;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedListener;
+import com.esri.arcgisruntime.mapping.view.SketchStyle;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
@@ -95,28 +97,38 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
         // define symbols
         mPointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.parseColor("#2B64F5"), 20);
-        mLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLACK, 2);
-//        mFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.argb(0.2f,245,100,45),mLineSymbol);
+        mLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID,  Color.parseColor("#2B64F5"), 2);
+        mFillSymbol = new SimpleFillSymbol(SimpleFillSymbol.Style.SOLID, Color.parseColor("#5E2B64F5"),mLineSymbol);
 
         // create a new sketch editor and add it to the map view
         mSketchEditor = new SketchEditor();
         mapView.setSketchEditor(mSketchEditor);
+
+        SketchStyle style = mSketchEditor.getSketchStyle();
+        style.getLineSymbol().setColor(Color.parseColor("#2B64F5"));
+        style.getLineSymbol().setWidth(3.0f);
+        style.getFillSymbol().setColor(Color.parseColor("#5E2B64F5"));
+//        style.setFillSymbol(mFillSymbol);
+        style.setVertexSymbol(new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.parseColor("#5E2B64F5"), 20));
+        style.setSelectedVertexSymbol(new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.parseColor("#2B64F5"), 10));
+        mSketchEditor.setSketchStyle(style);
+
         sketchGeometryChangedListener = new SketchGeometryChangedListener() {
             @Override
             public void geometryChanged(SketchGeometryChangedEvent sketchGeometryChangedEvent) {
                 if (sketchGeometryChangedEvent.getGeometry() != null) {
-                    Log.d(TAG, "geometryChanged: " + sketchGeometryChangedEvent.getGeometry().getGeometryType());
+                    Log.d(TAG, "geometryChanged: " + sketchGeometryChangedEvent.getGeometry().toJson());
                     try {
                         switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
                             case POLYLINE:
-//                                final Polyline wgs84Point = (Polyline) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
-//                                String jsonStr = wgs84Point.toJson();
-//                                JSONObject obj = new JSONObject(jsonStr);
-//                                JSONArray jsonArr = new JSONArray(obj.getString("rings"));
-//                                WritableMap map = Arguments.createMap();
-//                                map.putBoolean("success", true);
-//                                map.putString("response", jsonArr.toString());
-//                                emitEvent("onDrawPoligon", map);
+                                final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
+                                String jsonStr1 = wgs84Point1.toJson();
+                                JSONObject obj1 = new JSONObject(jsonStr1);
+                                JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
+                                WritableMap map1 = Arguments.createMap();
+                                map1.putBoolean("success", true);
+                                map1.putString("response", jsonArr1.toString());
+                                emitEvent("onDrawPoligon", map1);
                                 break;
                             case POLYGON:
                                 final Polygon wgs84Point = (Polygon) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
@@ -165,48 +177,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     @SuppressLint("ClickableViewAccessibility")
     public void setUpMap() {
-        mapView.setMap(new ArcGISMap(Basemap.Type.STREETS_VECTOR, 34.057, -117.196, 17));
-        mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
-        routeGraphicsOverlay = new GraphicsOverlay();
-        mSketchEditor = new SketchEditor();
-        mapView.setSketchEditor(mSketchEditor);
 
-
-        mSketchEditor.addGeometryChangedListener(new SketchGeometryChangedListener() {
-            @Override
-            public void geometryChanged(SketchGeometryChangedEvent sketchGeometryChangedEvent) {
-                if (sketchGeometryChangedEvent.getGeometry() != null) {
-                    Log.d(TAG, "geometryChanged: " + sketchGeometryChangedEvent.getGeometry().getGeometryType());
-                    try {
-                        switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
-                            case POINT:
-                                break;
-                            case POLYGON:
-                                final Polygon wgs84Point = (Polygon) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
-                                String jsonStr = wgs84Point.toJson();
-                                Log.d(TAG, "geometryChanged: " + jsonStr);
-                                JSONObject obj = new JSONObject(jsonStr);
-                                JSONArray jsonArr = new JSONArray(obj.getString("rings"));
-                                for (int i = 0; i < jsonArr.length(); i++) {
-                                    Log.d(TAG, "geometryChanged: " + jsonArr.getJSONArray(i));
-                                }
-                                WritableMap map = Arguments.createMap();
-
-                                map.putBoolean("success", true);
-                                map.putString("response", jsonArr.toString());
-                                emitEvent("onDrawPoligon", map);
-                                break;
-                            default:
-                                break;
-                        }
-
-                    } catch (JSONException e) {
-
-                    }
-                }
-            }
-        });
-        mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
         mapView.getMap().addDoneLoadingListener(() -> {
             ArcGISRuntimeException e = mapView.getMap().getLoadError();
             Boolean success = e != null;
@@ -218,26 +189,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         });
     }
 
-    // MARK: Prop set methods
-    public void setBasemapUrl(String url) {
-        basemapUrl = url;
-        if (basemapUrl == null || basemapUrl.isEmpty()) {
-            return;
-        }
-        // Set basemap of map
-        if (mapView.getMap() == null) {
-            setUpMap();
-        }
-        final Basemap basemap = new Basemap(basemapUrl);
-        basemap.addDoneLoadingListener(() -> {
-            if (basemap.getLoadError() != null) {
-                Log.w("AGSMap", "An error occurred: " + basemap.getLoadError().getMessage());
-            } else {
-                mapView.getMap().setBasemap(basemap);
-            }
-        });
-        basemap.loadAsync();
-    }
 
     public void setRouteUrl(String url) {
         routeUrl = url;
@@ -330,6 +281,26 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
     }
 
+    // MARK: Prop set methods
+    public void setBasemapUrl(String url) {
+        basemapUrl = url;
+        if (basemapUrl == null || basemapUrl.isEmpty()) {
+            return;
+        }
+        // Set basemap of map
+        if (mapView.getMap() == null) {
+            setUpMap();
+        }
+        final Basemap basemap = new Basemap(basemapUrl);
+        basemap.addDoneLoadingListener(() -> {
+            if (basemap.getLoadError() != null) {
+                Log.w("AGSMap", "An error occurred: " + basemap.getLoadError().getMessage());
+            } else {
+                mapView.getMap().setBasemap(basemap);
+            }
+        });
+        basemap.loadAsync();
+    }
     public void centerMap(ReadableArray args) {
         final ArrayList<Point> points = new ArrayList<>();
         for (int i = 0; i < args.size(); i++) {
@@ -404,32 +375,22 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     public String addSketchToMap(int sketchType) {
-        Log.d(TAG, "addSketchToMap: "+sketchType);
         switch (sketchType) {
             case 1 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
-                mSketchEditor.start(SketchCreationMode.POLYGON);
+                mSketchEditor.start(SketchCreationMode.FREEHAND_POLYGON);
                 break;
             case 2 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
                 mSketchEditor.start(SketchCreationMode.RECTANGLE);
                 break;
             case 3 :
+                mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
+                mSketchEditor.start(SketchCreationMode.POLYLINE);
             default:
                 break;
         }
-//        Log.d(TAG, "addSketchToMap: Parker "+args);
-
         return "Done";
-//        if (!args.hasKey("overlayReferenceId")) {
-//            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
-//            return;
-//        }
-//        String overlayReferenceId = args.getString("overlayReferenceId");
-//        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
-//        if (overlay != null && args.hasKey("points")) {
-//            overlay.addGraphics(args.getArray("points"));
-//        }
     }
 
     public String stopSketchOnMap() {
@@ -452,16 +413,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
      */
     private void stop() {
         if (!mSketchEditor.isSketchValid()) {
-//            reportNotValid();
             mSketchEditor.stop();
-//            resetButtons();
             return;
         }
 
         // get the geometry from sketch editor
         Geometry sketchGeometry = mSketchEditor.getGeometry();
         mSketchEditor.stop();
-//        resetButtons();
 
         if (sketchGeometry != null) {
 
@@ -571,7 +529,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     // MARK: Event emitting
     public void emitEvent(String eventName, WritableMap args) {
-        Log.d(TAG, "emitEvent: "+args+eventName);
+//        Log.d(TAG, "emitEvent: "+args+eventName);
         ((ReactContext) getContext()).getJSModule(RCTEventEmitter.class).receiveEvent(
                 getId(),
                 eventName,
@@ -585,6 +543,30 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         OnSingleTouchListener(Context context, MapView mMapView) {
             super(context, mMapView);
             Log.d(TAG, "OnSingleTouchListener: ");
+        }
+
+        @Override
+        public boolean onDoubleTouchDrag(MotionEvent event) {
+            Log.d(TAG, "onDoubleTouchDrag: "+event);
+            return super.onDoubleTouchDrag(event);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            Log.d(TAG, "onFling: ");
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            Log.d(TAG, "onScroll: ");
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            Log.d(TAG, "onScaleEnd: ");
+            super.onScaleEnd(detector);
         }
 
         @Override
@@ -627,12 +609,12 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             return map;
         }
 
+
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             WritableMap map = createPointMap(e);
             android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
-
-
             ListenableFuture<List<IdentifyGraphicsOverlayResult>> future = mMapView.identifyGraphicsOverlaysAsync(screenPoint, 15, false);
             future.addDoneListener(() -> {
                 try {
@@ -643,14 +625,49 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                         // More null checking >.>
                         if (!graphicResult.isEmpty()) {
                             Graphic result = graphicResult.get(0);
-                            Log.d(TAG, "onSingleTapConfirmed: "+result+graphicResult);
-                            if (result != null) {
-                                map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
-                            }
+//                            Point latLongPoint = ((Point) GeometryEngine.project(mapPoint, SpatialReferences.getWgs84()));
+//                            Log.d(TAG, "onSingleTapConfirmed: "+result.getGeometry().toJson());
+//                            Log.d(TAG, "graphicReferenceId: "+result.getAttributes());
+                            if (result.getGeometry() != null) {
+                                try {
+                                    switch (result.getGeometry().getGeometryType()) {
+                                        case POLYLINE:
+                                            final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
+                                            String jsonStr1 = wgs84Point1.toJson();
+                                            JSONObject obj1 = new JSONObject(jsonStr1);
+                                            JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
+                                            WritableMap map1 = Arguments.createMap();
+                                            map1.putBoolean("success", true);
+                                            map1.putString("response", jsonArr1.toString());
+//                                            map1.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
+                                emitEvent("onDrawPoligon", map1);
+                                            break;
+                                        case POLYGON:
+                                            final Polygon wgs84Point = (Polygon) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
+                                            String jsonStr = wgs84Point.toJson();
+//                                            Log.d(TAG, "geometryChanged: " + jsonStr);
+                                            JSONObject obj = new JSONObject(jsonStr);
+                                            JSONArray jsonArr = new JSONArray(obj.getString("rings"));
+                                            WritableMap map2 = Arguments.createMap();
+                                            map2.putBoolean("success", true);
+//                                            map2.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
+                                            map2.putString("response", jsonArr.toString());
+                                emitEvent("onDrawPoligon", map2);
+                                            break;
+                                        default:
+                                            break;
+                                    }
 
-                            if (recenterIfGraphicTapped) {
-                                mapView.setViewpointCenterAsync(((Point) result.getGeometry()));
+                                } catch (JSONException error) {
+                                    Log.d(TAG, "onSingleTapConfirmed: error "+error);
+                                }
                             }
+//                            if (result != null) {
+//                                map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
+//                            }
+//                            if (recenterIfGraphicTapped) {
+//                                mapView.setViewpointCenterAsync(((Point) result.getGeometry()));
+//                            }
                         }
                     }
                 } catch (InterruptedException | ExecutionException exception) {
