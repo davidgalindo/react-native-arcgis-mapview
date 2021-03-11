@@ -87,7 +87,7 @@ class ArcGISMapView extends React.Component {
     );
   }
 
-  stopSketchDrawOverlayManager = () => {
+  stopSketchDrawOverlay = () => {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),
       UIManager.getViewManagerConfig('RNArcGISMapView').Commands.stopSketchDrawOverlayManager,
