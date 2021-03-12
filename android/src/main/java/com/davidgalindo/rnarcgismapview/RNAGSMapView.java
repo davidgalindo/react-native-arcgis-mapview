@@ -76,6 +76,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     private SimpleFillSymbol mFillSymbol;
     Double minZoom = 0.0;
     Double maxZoom = 0.0;
+    Graphic mGraphic ;
     Boolean rotationEnabled = true;
     private SketchEditor mSketchEditor;
 
@@ -117,7 +118,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             @Override
             public void geometryChanged(SketchGeometryChangedEvent sketchGeometryChangedEvent) {
                 if (sketchGeometryChangedEvent.getGeometry() != null) {
-                    Log.d(TAG, "geometryChanged: " + sketchGeometryChangedEvent.getGeometry().toJson());
+                    Log.d(TAG, "abhishek: " + sketchGeometryChangedEvent.getGeometry().getGeometryType());
                     try {
                         switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
                             case POLYLINE:
@@ -128,12 +129,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                 WritableMap map1 = Arguments.createMap();
                                 map1.putBoolean("success", true);
                                 map1.putString("response", jsonArr1.toString());
+                                Log.d(TAG, "POLYLINE: " + map1);
                                 emitEvent("onDrawPoligon", map1);
                                 break;
                             case POLYGON:
                                 final Polygon wgs84Point = (Polygon) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
                                 String jsonStr = wgs84Point.toJson();
-                                Log.d(TAG, "geometryChanged: " + jsonStr);
+//                                Log.d(TAG, "geometryChanged: " + jsonStr);
                                 JSONObject obj = new JSONObject(jsonStr);
                                 JSONArray jsonArr = new JSONArray(obj.getString("rings"));
                                 WritableMap map = Arguments.createMap();
@@ -142,11 +144,12 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                 emitEvent("onDrawPoligon", map);
                                 break;
                             default:
+                                Log.d(TAG, "default: ");
                                 break;
                         }
 
                     } catch (JSONException e) {
-
+                        Log.d(TAG, "JSONException: "+e.getMessage());
                     }
                 }
             }
@@ -335,13 +338,14 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     public void removeGraphicsOverlay(String removalId) {
-        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
-        if (overlay == null) {
-            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
-            return;
-        }
-        mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
-        rnGraphicsOverlays.remove(removalId);
+//        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
+//        if (overlay == null) {
+//            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
+//            return;
+//        }
+//        mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
+//        rnGraphicsOverlays.remove(removalId);
+        routeGraphicsOverlay.getGraphics().remove(mGraphic);
     }
 
     // Point updates
@@ -375,6 +379,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     public String addSketchToMap(int sketchType) {
+        routeGraphicsOverlay.getGraphics().remove(mGraphic);
         switch (sketchType) {
             case 1 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
@@ -386,7 +391,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 break;
             case 3 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
-                mSketchEditor.start(SketchCreationMode.POLYLINE);
+                mSketchEditor.start(SketchCreationMode.FREEHAND_LINE);
             default:
                 break;
         }
@@ -420,25 +425,26 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         // get the geometry from sketch editor
         Geometry sketchGeometry = mSketchEditor.getGeometry();
         mSketchEditor.stop();
-
+        routeGraphicsOverlay.getGraphics().remove(mGraphic);
         if (sketchGeometry != null) {
 
             // create a graphic from the sketch editor geometry
-            Graphic graphic = new Graphic(sketchGeometry);
+            mGraphic = new Graphic(sketchGeometry);
 
             // assign a symbol based on geometry type
-            if (graphic.getGeometry().getGeometryType() == GeometryType.POLYGON ) {
-                graphic.setSymbol(mFillSymbol);
-            } else if (graphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
-                graphic.setSymbol(mLineSymbol);
-            } else if (graphic.getGeometry().getGeometryType() == GeometryType.POINT ||
-                    graphic.getGeometry().getGeometryType() == GeometryType.MULTIPOINT) {
-                graphic.setSymbol(mPointSymbol);
+            if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYGON ) {
+                mGraphic.setSymbol(mFillSymbol);
+            } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
+                mGraphic.setSymbol(mLineSymbol);
+            } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POINT ||
+                    mGraphic.getGeometry().getGeometryType() == GeometryType.MULTIPOINT) {
+                mGraphic.setSymbol(mPointSymbol);
             }
             else
-                graphic.setSymbol(mFillSymbol);
+                mGraphic.setSymbol(mFillSymbol);
             // add the graphic to the graphics overlay
-            routeGraphicsOverlay.getGraphics().add(graphic);
+            routeGraphicsOverlay.getGraphics().add(mGraphic);
+//            routeGraphicsOverlay.getGraphics().remove(graphic);
         }
     }
 
@@ -546,6 +552,18 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
 
         @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onDoubleTap: ");
+            return super.onDoubleTap(e);
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            Log.d(TAG, "onDoubleTapEvent: ");
+            return super.onDoubleTapEvent(e);
+        }
+
+        @Override
         public boolean onDoubleTouchDrag(MotionEvent event) {
             Log.d(TAG, "onDoubleTouchDrag: "+event);
             return super.onDoubleTouchDrag(event);
@@ -626,42 +644,42 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                         if (!graphicResult.isEmpty()) {
                             Graphic result = graphicResult.get(0);
 //                            Point latLongPoint = ((Point) GeometryEngine.project(mapPoint, SpatialReferences.getWgs84()));
-//                            Log.d(TAG, "onSingleTapConfirmed: "+result.getGeometry().toJson());
+                            Log.d(TAG, "onSingleTapConfirmed: "+result.getGeometry().getGeometryType());
 //                            Log.d(TAG, "graphicReferenceId: "+result.getAttributes());
-                            if (result.getGeometry() != null) {
-                                try {
-                                    switch (result.getGeometry().getGeometryType()) {
-                                        case POLYLINE:
-                                            final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
-                                            String jsonStr1 = wgs84Point1.toJson();
-                                            JSONObject obj1 = new JSONObject(jsonStr1);
-                                            JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
-                                            WritableMap map1 = Arguments.createMap();
-                                            map1.putBoolean("success", true);
-                                            map1.putString("response", jsonArr1.toString());
-//                                            map1.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
-                                emitEvent("onDrawPoligon", map1);
-                                            break;
-                                        case POLYGON:
-                                            final Polygon wgs84Point = (Polygon) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
-                                            String jsonStr = wgs84Point.toJson();
-//                                            Log.d(TAG, "geometryChanged: " + jsonStr);
-                                            JSONObject obj = new JSONObject(jsonStr);
-                                            JSONArray jsonArr = new JSONArray(obj.getString("rings"));
-                                            WritableMap map2 = Arguments.createMap();
-                                            map2.putBoolean("success", true);
-//                                            map2.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
-                                            map2.putString("response", jsonArr.toString());
-                                emitEvent("onDrawPoligon", map2);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-
-                                } catch (JSONException error) {
-                                    Log.d(TAG, "onSingleTapConfirmed: error "+error);
-                                }
-                            }
+//                            if (result.getGeometry() != null) {
+//                                try {
+//                                    switch (result.getGeometry().getGeometryType()) {
+//                                        case POLYLINE:
+//                                            final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
+//                                            String jsonStr1 = wgs84Point1.toJson();
+//                                            JSONObject obj1 = new JSONObject(jsonStr1);
+//                                            JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
+//                                            WritableMap map1 = Arguments.createMap();
+//                                            map1.putBoolean("success", true);
+//                                            map1.putString("response", jsonArr1.toString());
+////                                            map1.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
+//                                emitEvent("onDrawPoligon", map1);
+//                                            break;
+//                                        case POLYGON:
+//                                            final Polygon wgs84Point = (Polygon) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
+//                                            String jsonStr = wgs84Point.toJson();
+////                                            Log.d(TAG, "geometryChanged: " + jsonStr);
+//                                            JSONObject obj = new JSONObject(jsonStr);
+//                                            JSONArray jsonArr = new JSONArray(obj.getString("rings"));
+//                                            WritableMap map2 = Arguments.createMap();
+//                                            map2.putBoolean("success", true);
+////                                            map2.putString("graphicReferenceId", result.getAttributes().get("referenceId").toString());
+//                                            map2.putString("response", jsonArr.toString());
+//                                emitEvent("onDrawPoligon", map2);
+//                                            break;
+//                                        default:
+//                                            break;
+//                                    }
+//
+//                                } catch (JSONException error) {
+//                                    Log.d(TAG, "onSingleTapConfirmed: error "+error);
+//                                }
+//                            }
 //                            if (result != null) {
 //                                map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
 //                            }
