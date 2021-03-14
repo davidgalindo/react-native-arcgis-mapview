@@ -122,10 +122,12 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                     try {
                         switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
                             case POLYLINE:
+
                                 final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
                                 String jsonStr1 = wgs84Point1.toJson();
                                 JSONObject obj1 = new JSONObject(jsonStr1);
-                                JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
+                                Log.d(TAG, "geometryChanged: "+obj1);
+                                JSONArray jsonArr1 = new JSONArray(obj1.getString("paths"));
                                 WritableMap map1 = Arguments.createMap();
                                 map1.putBoolean("success", true);
                                 map1.putString("response", jsonArr1.toString());
@@ -338,13 +340,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     public void removeGraphicsOverlay(String removalId) {
-//        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
-//        if (overlay == null) {
-//            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
-//            return;
-//        }
-//        mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
-//        rnGraphicsOverlays.remove(removalId);
+        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
+        if (overlay == null) {
+            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
+            return;
+        }
+        mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
+        rnGraphicsOverlays.remove(removalId);
         routeGraphicsOverlay.getGraphics().remove(mGraphic);
     }
 
@@ -435,7 +437,10 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYGON ) {
                 mGraphic.setSymbol(mFillSymbol);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
-                mGraphic.setSymbol(mLineSymbol);
+                Log.d(TAG, "stop: ");
+                Polygon mPolygon = GeometryEngine.buffer(mGraphic.getGeometry(),20);
+                Graphic routeGraphic = new Graphic(mPolygon, mFillSymbol);
+                routeGraphicsOverlay.getGraphics().add(routeGraphic);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POINT ||
                     mGraphic.getGeometry().getGeometryType() == GeometryType.MULTIPOINT) {
                 mGraphic.setSymbol(mPointSymbol);
@@ -618,6 +623,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             WritableMap mapPointMap = Arguments.createMap();
             if (mapPoint != null) {
                 Point latLongPoint = ((Point) GeometryEngine.project(mapPoint, SpatialReferences.getWgs84()));
+
                 mapPointMap.putDouble("latitude", latLongPoint.getY());
                 mapPointMap.putDouble("longitude", latLongPoint.getX());
             }
