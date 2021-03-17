@@ -343,6 +343,26 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         rnGraphicsOverlays.put(overlay.getReferenceId(), overlay);
     }
 
+//    public void removeGraphicsOverlay(String removalId) {
+//        if(removalId.length() > 0) {
+//            RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
+//            if (overlay == null) {
+//                Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
+//                return;
+//            }
+//            mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
+//            rnGraphicsOverlays.remove(removalId);
+//            routeGraphicsOverlay.getGraphics().remove(mGraphic);
+//            routeGraphicsOverlay.getGraphics().remove(lineGraphic);
+//        } else {
+//            routeGraphicsOverlay.getGraphics().remove(mGraphic);
+//            routeGraphicsOverlay.getGraphics().remove(lineGraphic);
+//        }
+//    }
+//    
+//    
+
+
     public void removeGraphicsOverlay(String removalId) {
         if(removalId.length() > 0) {
             RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
@@ -352,8 +372,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             }
             mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
             rnGraphicsOverlays.remove(removalId);
-            routeGraphicsOverlay.getGraphics().remove(mGraphic);
-            routeGraphicsOverlay.getGraphics().remove(lineGraphic);
+            // routeGraphicsOverlay.getGraphics().remove(mGraphic);
+            // routeGraphicsOverlay.getGraphics().remove(lineGraphic);
         } else {
             routeGraphicsOverlay.getGraphics().remove(mGraphic);
             routeGraphicsOverlay.getGraphics().remove(lineGraphic);
