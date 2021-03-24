@@ -94,7 +94,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             ((ReactContext) context).addLifecycleEventListener(this);
         }
 
-        ArcGISMap map = new ArcGISMap(Basemap.Type.LIGHT_GRAY_CANVAS, 34.056295, -117.195800, 16);
+        ArcGISMap map = new ArcGISMap(Basemap.Type.TOPOGRAPHIC_VECTOR, 34.056295, -117.195800, 16);
         mapView.setMap(map);
         routeGraphicsOverlay = new GraphicsOverlay();
         mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
@@ -522,7 +522,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 mGraphic.setSymbol(mFillSymbol);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
                 Log.d(TAG, "stop: ");
-                Polygon mPolygon = GeometryEngine.buffer(mGraphic.getGeometry(),20);
+//                 Polygon mPolygon = GeometryEngine.buffer(mGraphic.getGeometry(),20);
+                 Polygon mPolygon = GeometryEngine.bufferGeodetic(mGraphic.getGeometry(),20, new LinearUnit(LinearUnitId.METERS),1.0,GeodeticCurveType.SHAPE_PRESERVING);
                 lineGraphic = new Graphic(mPolygon, mFillSymbol);
                 routeGraphicsOverlay.getGraphics().add(lineGraphic);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POINT ||
