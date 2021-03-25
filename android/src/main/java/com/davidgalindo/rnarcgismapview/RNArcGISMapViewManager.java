@@ -101,6 +101,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
         map.put("dispose", DISPOSE);
         map.put("stopSketchToMapViaManager", STOP_SKETCH_ON_MAP);
         map.put("stopSketchDrawOverlayManager",STOP_SKETCH_DRAY_LAYER);
+        map.put("updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY);
         return map;
     }
 
