@@ -3,6 +3,8 @@ package com.davidgalindo.rnarcgismapview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -10,12 +12,18 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.GeodeticCurveType;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.GeometryType;
+import com.esri.arcgisruntime.geometry.LinearUnit;
+import com.esri.arcgisruntime.geometry.LinearUnitId;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
@@ -36,6 +44,7 @@ import com.esri.arcgisruntime.mapping.view.SketchEditor;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedEvent;
 import com.esri.arcgisruntime.mapping.view.SketchGeometryChangedListener;
 import com.esri.arcgisruntime.mapping.view.SketchStyle;
+import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleFillSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
@@ -126,7 +135,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                     try {
                         switch (sketchGeometryChangedEvent.getGeometry().getGeometryType()) {
                             case POLYLINE:
-
                                 final Polyline wgs84Point1 = (Polyline) GeometryEngine.project(sketchGeometryChangedEvent.getGeometry(), SpatialReferences.getWgs84());
                                 String jsonStr1 = wgs84Point1.toJson();
                                 JSONObject obj1 = new JSONObject(jsonStr1);
@@ -335,12 +343,90 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     }
 
-    // Layer add/remove
-    public void addGraphicsOverlay(ReadableMap args) {
+    private void setupSymbols(ReadableMap args,Double latitude, Double longitude) {
+
         GraphicsOverlay graphicsOverlay = new GraphicsOverlay();
+
+        //add the overlay to the map view
         mapView.getGraphicsOverlays().add(graphicsOverlay);
-        RNAGSGraphicsOverlay overlay = new RNAGSGraphicsOverlay(args, graphicsOverlay);
-        rnGraphicsOverlays.put(overlay.getReferenceId(), overlay);
+
+        //[DocRef: Name=Picture Marker Symbol Drawable-android, Category=Fundamentals, Topic=Symbols and Renderers]
+        //Create a picture marker symbol from an app resource
+        BitmapDrawable selectedMapPin = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.mappin);
+        BitmapDrawable unSelectedMapPin = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.backarrow);
+        final PictureMarkerSymbol selectedPinSourceSymbol,unSelectedPinSourceSymbol;
+        try {
+            selectedPinSourceSymbol = PictureMarkerSymbol.createAsync(selectedMapPin).get();
+            selectedPinSourceSymbol.loadAsync();
+            selectedPinSourceSymbol.setOffsetY(20);
+            selectedPinSourceSymbol.setWidth(20);
+            selectedPinSourceSymbol.setHeight(20);
+
+            unSelectedPinSourceSymbol = PictureMarkerSymbol.createAsync(unSelectedMapPin).get();
+            unSelectedPinSourceSymbol.loadAsync();
+            unSelectedPinSourceSymbol.setOffsetY(20);
+            unSelectedPinSourceSymbol.setWidth(20);
+            unSelectedPinSourceSymbol.setHeight(20);
+
+
+            selectedPinSourceSymbol.addDoneLoadingListener(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "run: ");
+                    ReadableArray arr = args.getArray("points");
+                    for (int i = 0; i < arr.size(); i++) {
+                        if (longitude == arr.getMap(i).getDouble("longitude") && latitude == arr.getMap(i).getDouble("latitude")) {
+                            Log.d(TAG, "run: matched");
+                            Point mSourcePoint = new Point(arr.getMap(i).getDouble("longitude"), arr.getMap(i).getDouble("latitude"), SpatialReferences.getWgs84());
+                            Graphic pinSourceGraphic = new Graphic(mSourcePoint, selectedPinSourceSymbol);
+                            graphicsOverlay.getGraphics().remove(pinSourceGraphic);
+                        }else{
+                            Point mSourcePoint = new Point(arr.getMap(i).getDouble("longitude"), arr.getMap(i).getDouble("latitude"), SpatialReferences.getWgs84());
+                            Graphic pinSourceGraphic = new Graphic(mSourcePoint, selectedPinSourceSymbol);
+                            graphicsOverlay.getGraphics().add(pinSourceGraphic);
+                        }
+
+                    }
+                }
+            });
+
+            unSelectedPinSourceSymbol.addDoneLoadingListener(new Runnable() {
+                @Override
+                public void run() {
+                    ReadableArray arr = args.getArray("points");
+                    for (int i = 0; i < arr.size(); i++) {
+                        if (longitude == arr.getMap(i).getDouble("longitude") && latitude == arr.getMap(i).getDouble("latitude")) {
+                            Log.d(TAG, "run: matched");
+                            Point mSourcePoint = new Point(arr.getMap(i).getDouble("longitude"), arr.getMap(i).getDouble("latitude"), SpatialReferences.getWgs84());
+                            Graphic pinSourceGraphic = new Graphic(mSourcePoint, unSelectedPinSourceSymbol);
+                            graphicsOverlay.getGraphics().add(pinSourceGraphic);
+                        }
+                    }
+                }
+            });
+
+            ReadableArray arr =  args.getArray("points");
+            PointCollection collection = new PointCollection(SpatialReferences.getWgs84());
+            for (int i = 0; i< arr.size();i++){
+                collection.add(new Point(arr.getMap(i).getDouble("latitude"), arr.getMap(i).getDouble("longitude")));
+            }
+
+            Polygon myPolygon = new Polygon(collection);
+            mapView.setViewpointGeometryAsync(myPolygon,75);
+
+        } catch (InterruptedException e) {
+            Log.d(TAG, "setupSymbols: error 1"+e.getMessage());
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            Log.d(TAG, "setupSymbols: error 2"+e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Layer add/remove
+
+    public void addGraphicsOverlay(ReadableMap args) {
+        this.setupSymbols(args,0.0,0.0);
     }
 
 //    public void removeGraphicsOverlay(String removalId) {
@@ -359,8 +445,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //            routeGraphicsOverlay.getGraphics().remove(lineGraphic);
 //        }
 //    }
-//    
-//    
+//
+//
 
 
     public void removeGraphicsOverlay(String removalId) {
@@ -382,20 +468,23 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     // Point updates
     public void updatePointsInGraphicsOverlay(ReadableMap args) {
-        if (!args.hasKey("overlayReferenceId")) {
-            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
-            return;
-        }
-        Boolean shouldAnimateUpdate = false;
-        if (args.hasKey("animated")) {
-            shouldAnimateUpdate = args.getBoolean("animated");
-        }
-        String overlayReferenceId = args.getString("overlayReferenceId");
-        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
-        if (overlay != null && args.hasKey("updates")) {
-            overlay.setShouldAnimateUpdate(shouldAnimateUpdate);
-            overlay.updateGraphics(args.getArray("updates"));
-        }
+//        if (!args.hasKey("overlayReferenceId")) {
+//            Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
+//            return;
+//        }
+//        Boolean shouldAnimateUpdate = false;
+//        if (args.hasKey("animated")) {
+//            shouldAnimateUpdate = args.getBoolean("animated");
+//        }
+//        String overlayReferenceId = args.getString("overlayReferenceId");
+//        RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(overlayReferenceId);
+//        if (overlay != null && args.hasKey("updates")) {
+//            overlay.setShouldAnimateUpdate(shouldAnimateUpdate);
+//            overlay.updateGraphics(args.getArray("updates"));
+//        }
+        Log.d(TAG, "updatePointsInGraphicsOverlay: "+args);
+        this.setupSymbols(args,args.getDouble("longitude"),args.getDouble("latitude"));
+
     }
 
     public void addPointsToOverlay(ReadableMap args) {
@@ -408,8 +497,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }else{
                    ReadableArray arr =  args.getArray("points");
                    PointCollection collection = new PointCollection(SpatialReferences.getWgs84());
-
-
                   for (int i = 0; i< arr.size();i++){
                       Log.d(TAG, "addPointsToOverlay: "+arr.getMap(i).getDouble("latitude")+ arr.getMap(i).getDouble("longitude"));
                       collection.add(new Point(arr.getMap(i).getDouble("latitude"), arr.getMap(i).getDouble("longitude")));
@@ -522,8 +609,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 mGraphic.setSymbol(mFillSymbol);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POLYLINE) {
                 Log.d(TAG, "stop: ");
-//                 Polygon mPolygon = GeometryEngine.buffer(mGraphic.getGeometry(),20);
-                 Polygon mPolygon = GeometryEngine.bufferGeodetic(mGraphic.getGeometry(),20, new LinearUnit(LinearUnitId.METERS),1.0,GeodeticCurveType.SHAPE_PRESERVING);
+//                Polygon mPolygon = GeometryEngine.buffer(mGraphic.getGeometry(),20);
+                Polygon mPolygon = GeometryEngine.bufferGeodetic(mGraphic.getGeometry(),20, new LinearUnit(LinearUnitId.METERS),1.0,GeodeticCurveType.SHAPE_PRESERVING);
                 lineGraphic = new Graphic(mPolygon, mFillSymbol);
                 routeGraphicsOverlay.getGraphics().add(lineGraphic);
             } else if (mGraphic.getGeometry().getGeometryType() == GeometryType.POINT ||
@@ -750,7 +837,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                             map1.putBoolean("success", true);
                                             map1.putString("response", jsonArr1.toString());
                                             Log.d(TAG, "POLYLINE: " + map1);
-                                            emitEvent("onDrawPoligon", map1);
+//                                            emitEvent("onDrawPoligon", map1);
                                             break;
                                         case POLYGON:
                                             final Polygon wgs84Point = (Polygon) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
@@ -760,10 +847,20 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                             WritableMap mapp = Arguments.createMap();
                                             mapp.putBoolean("success", true);
                                             mapp.putString("response", jsonArr.toString());
-                                            emitEvent("onDrawPoligon", mapp);
+//                                            emitEvent("onDrawPoligon", mapp);
+                                            break;
+                                        case POINT:
+                                            Log.d(TAG, "POINT: "+result.getGeometry().toJson());
+                                            WritableMap newWriteMap = Arguments.createMap();
+                                            newWriteMap.putBoolean("success", true);
+                                            final Point myPoint = (Point) GeometryEngine.project(result.getGeometry(), SpatialReferences.getWgs84());
+                                            newWriteMap.putDouble("latitude",myPoint.getX());
+                                            newWriteMap.putDouble("longitude",myPoint.getY());
+                                            newWriteMap.putString("response","");
+                                            emitEvent("onSingleTap", newWriteMap);
                                             break;
                                         default:
-                                            Log.d(TAG, "default: ");
+                                            Log.d(TAG, "default: "+result.getGeometry().toJson());
                                             break;
                                     }
 
@@ -772,13 +869,13 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                 }
                             }
 
-                            Log.d(TAG, "onSingleTapConfirmed: "+result.getAttributes().get("referenceId"));
-                            if (result != null) {
-                                Map<String,Object> mMap = result.getAttributes();
-                                if (mMap != null && mMap.get("referenceId") != null){
-                                    map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
-                                }
-                            }
+//                            Log.d(TAG, "onSingleTapConfirmed: "+result.getAttributes().get("referenceId"));
+//                            if (result != null) {
+//                                Map<String,Object> mMap = result.getAttributes();
+//                                if (mMap != null && mMap.get("referenceId") != null){
+//                                    map.putString("graphicReferenceId", Objects.requireNonNull(result.getAttributes().get("referenceId")).toString());
+//                                }
+//                            }
 //                            if (recenterIfGraphicTapped) {
 //                                mapView.setViewpointCenterAsync(((Point) result.getGeometry()));
 //                            }
@@ -787,7 +884,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 } catch (InterruptedException | ExecutionException exception) {
                     exception.printStackTrace();
                 } finally {
-                    emitEvent("onSingleTap", map);
+//                    emitEvent("onSingleTap", map);
                 }
             });
             return true;
