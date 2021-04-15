@@ -136,6 +136,11 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
                                 "phasedRegistrationNames",
                                 MapBuilder.of("bubbled", "onSingleTap")))
                 .put(
+                        "onMapTap",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onMapTap")))
+                .put(
                         "onMapDidLoad",
                         MapBuilder.of(
                                 "phasedRegistrationNames",
