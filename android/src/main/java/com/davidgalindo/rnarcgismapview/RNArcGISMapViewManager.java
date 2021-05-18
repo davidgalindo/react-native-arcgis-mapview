@@ -18,6 +18,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     private final int SHOW_CALLOUT = 1;
     private final int CENTER_MAP = 2;
     private final int ADD_GRAPHICS_OVERLAY = 3;
+    private final int ADD_LOCATION = 13;
     private final int REMOVE_GRAPHICS_OVERLAY = 4;
     private final int ADD_POINTS_TO_OVERLAY = 5;
     private final int ADD_SKETCH_TO_MAP = 10;
@@ -102,6 +103,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
         map.put("stopSketchToMapViaManager", STOP_SKETCH_ON_MAP);
         map.put("stopSketchDrawOverlayManager",STOP_SKETCH_DRAY_LAYER);
         map.put("updatePointsInGraphicsOverlayViaManager", UPDATE_POINTS_IN_GRAPHICS_OVERLAY);
+        map.put("addCurrentLocationViaManager", ADD_LOCATION);
         return map;
     }
 
@@ -114,6 +116,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
             case SHOW_CALLOUT: mapView.showCallout(args.getMap(0));return;
             case CENTER_MAP: mapView.centerMap(args.getArray(0));return;
             case ADD_GRAPHICS_OVERLAY: mapView.addGraphicsOverlay(args.getMap(0));return;
+            case ADD_LOCATION: mapView.addCurrentLocation(args.getArray(0));return;
             case REMOVE_GRAPHICS_OVERLAY: mapView.removeGraphicsOverlay(args.getString(0));return;
             case ADD_POINTS_TO_OVERLAY: mapView.addPointsToOverlay(args.getMap(0));return;
             case REMOVE_POINTS_FROM_OVERLAY: mapView.removePointsFromOverlay(args.getMap(0));return;

@@ -71,6 +71,14 @@ class ArcGISMapView extends React.Component {
     );
   }
 
+  addLocation = (pointArray) => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this.agsMapRef),
+      UIManager.getViewManagerConfig('RNArcGISMapView').Commands.addCurrentLocationViaManager,
+      [pointArray]
+    );
+  }
+
   addSketchToMap = (pointArray) => {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this.agsMapRef),

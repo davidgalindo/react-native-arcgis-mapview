@@ -82,7 +82,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     String routeUrl = "";
     Boolean recenterIfGraphicTapped = false;
     HashMap<String, RNAGSGraphicsOverlay> rnGraphicsOverlays = new HashMap<>();
-    GraphicsOverlay routeGraphicsOverlay, pinGraphicOverlay;
+    GraphicsOverlay routeGraphicsOverlay, pinGraphicOverlay, locationOverlay;
     GraphicsOverlay pinGraphicOverlay2 = new GraphicsOverlay();
     RNAGSRouter router;
     private Callout callout;
@@ -112,8 +112,6 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         routeGraphicsOverlay = new GraphicsOverlay();
         mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
         mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
-//        this.setMinZoom(999999999.0);
-//        this.setMaxZoom(999999999.0);
         // define symbols
         mPointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.parseColor("#2B64F5"), 20);
         mLineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID,  Color.parseColor("#2B64F5"), 2);
@@ -247,6 +245,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             points.add(new Point(36.244797, -94.148060, SpatialReferences.getWgs84()));
         }
         if (points.size() == 1) {
+            Log.d(TAG, "check" + points.get(0).getX()+ points.get(0).getY()+ points.get(0).getZ());
             mapView.getMap().setInitialViewpoint(new Viewpoint(points.get(0), 10000));
         } else {
             Polygon polygon = new Polygon(new PointCollection(points));
@@ -345,7 +344,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
         // Perform the recentering
         if (points.size() == 1) {
-            mapView.setViewpointCenterAsync(points.get(0), 60000);
+            mapView.setViewpointCenterAsync(points.get(0), 5000);
         } else if (points.size() > 1) {
             PointCollection pointCollection = new PointCollection(points);
             Polygon polygon = new Polygon(pointCollection);
@@ -377,14 +376,14 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             selectedPinSourceSymbol = PictureMarkerSymbol.createAsync(selectedMapPin).get();
             selectedPinSourceSymbol.loadAsync();
             selectedPinSourceSymbol.setOffsetY(20);
-            selectedPinSourceSymbol.setWidth(20);
-            selectedPinSourceSymbol.setHeight(20);
+            selectedPinSourceSymbol.setWidth(25);
+            selectedPinSourceSymbol.setHeight(29);
 
             unSelectedPinSourceSymbol = PictureMarkerSymbol.createAsync(unSelectedMapPin).get();
             unSelectedPinSourceSymbol.loadAsync();
             unSelectedPinSourceSymbol.setOffsetY(20);
-            unSelectedPinSourceSymbol.setWidth(20);
-            unSelectedPinSourceSymbol.setHeight(20);
+            unSelectedPinSourceSymbol.setWidth(25);
+            unSelectedPinSourceSymbol.setHeight(29);
 
 
             selectedPinSourceSymbol.addDoneLoadingListener(new Runnable() {
@@ -429,9 +428,10 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
             for (int i = 0; i< arr.size();i++){
                 collection.add(new Point(arr.getMap(i).getDouble("latitude"), arr.getMap(i).getDouble("longitude")));
             }
-
-            Polygon myPolygon = new Polygon(collection);
-            mapView.setViewpointGeometryAsync(myPolygon,75);
+            if(collection.size() > 1) {
+                Polygon myPolygon = new Polygon(collection);
+                mapView.setViewpointGeometryAsync(myPolygon,75);
+            }
 
         } catch (InterruptedException e) {
             Log.d(TAG, "setupSymbols: error 1"+e.getMessage());
@@ -439,6 +439,47 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         } catch (ExecutionException e) {
             Log.d(TAG, "setupSymbols: error 2"+e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public void addCurrentLocation(ReadableArray args) {
+        final ArrayList<Point> points = new ArrayList<>();
+        locationOverlay = new GraphicsOverlay();
+        mapView.getGraphicsOverlays().add(locationOverlay);
+        BitmapDrawable locationPin = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.location);
+
+//        Double latitude, longitude;
+        for (int i = 0; i < args.size(); i++) {
+            final PictureMarkerSymbol locationPinSymbol;
+            ReadableMap item = args.getMap(i);
+            if (item == null) {
+                continue;
+            }
+            Double latitude = item.getDouble("latitude");
+            Double longitude = item.getDouble("longitude");
+            try {
+                locationPinSymbol = PictureMarkerSymbol.createAsync(locationPin).get();
+                locationPinSymbol.loadAsync();
+                locationPinSymbol.setOffsetY(20);
+                locationPinSymbol.setWidth(26);
+                locationPinSymbol.setHeight(26);
+
+                locationPinSymbol.addDoneLoadingListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        Point mSourcePoint = new Point(longitude, latitude, SpatialReferences.getWgs84());
+                        Graphic pinSourceGraphic = new Graphic(mSourcePoint, locationPinSymbol);
+                        locationOverlay.getGraphics().add(pinSourceGraphic);
+                    }
+                });
+
+            } catch (InterruptedException e) {
+                Log.d(TAG, "setupSymbols: error 1"+e.getMessage());
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                Log.d(TAG, "setupSymbols: error 2"+e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -458,6 +499,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //            mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
             rnGraphicsOverlays.remove(removalId);
             mapView.getGraphicsOverlays().remove(pinGraphicOverlay);
+            mapView.getGraphicsOverlays().remove(locationOverlay);
 //            mapView.getGraphicsOverlays().remove(pinGraphicOverlay2);
             // routeGraphicsOverlay.getGraphics().remove(mGraphic);
             // routeGraphicsOverlay.getGraphics().remove(lineGraphic);
@@ -568,7 +610,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                 break;
             case 2 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
-                mSketchEditor.start(SketchCreationMode.RECTANGLE);
+                mSketchEditor.start(SketchCreationMode.POLYGON);
                 break;
             case 3 :
                 mSketchEditor.stop(); // will this fix a bug with changing draw modes w/o stopping
@@ -830,15 +872,18 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d(TAG, "onTouchConfirm: ");
             WritableMap map = createPointMap(e);
             android.graphics.Point screenPoint = new android.graphics.Point(((int) e.getX()), ((int) e.getY()));
             ListenableFuture<List<IdentifyGraphicsOverlayResult>> future = mMapView.identifyGraphicsOverlaysAsync(screenPoint, 15, false);
             future.addDoneListener(() -> {
                 try {
+                    Log.d(TAG, "onTouchConfirm1: " + !future.get().isEmpty());
                     if (!future.get().isEmpty()) {
                         // We only care about the topmost result
                         IdentifyGraphicsOverlayResult futureResult = future.get().get(0);
                         List<Graphic> graphicResult = futureResult.getGraphics();
+                        Log.d(TAG, "onTouchConfirm2: "+ !graphicResult.isEmpty());
                         // More null checking >.>
                         if (!graphicResult.isEmpty()) {
                             Graphic result = graphicResult.get(0);
@@ -901,6 +946,9 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //                                mapView.setViewpointCenterAsync(((Point) result.getGeometry()));
 //                            }
                         }
+                    } else {
+                        WritableMap map1 = Arguments.createMap();
+                        emitEvent("onMapTap", map1);
                     }
                 } catch (InterruptedException | ExecutionException exception) {
                     exception.printStackTrace();
