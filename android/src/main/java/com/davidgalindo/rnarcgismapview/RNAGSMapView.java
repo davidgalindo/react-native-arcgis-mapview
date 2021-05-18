@@ -53,6 +53,8 @@ import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.esri.arcgisruntime.util.ListenableList;
+//location
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -89,6 +91,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     private SimpleMarkerSymbol mPointSymbol;
     private SimpleLineSymbol mLineSymbol;
     private SimpleFillSymbol mFillSymbol;
+    //location
+    LocationDisplay mLocationDisplay;
     Double minZoom = 20.0;
     Double maxZoom = 0.0;
     Graphic mGraphic,lineGraphic ;
@@ -109,6 +113,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         ArcGISMap map = new ArcGISMap(Basemap.Type.TOPOGRAPHIC_VECTOR, 34.056295, -117.195800, 18);
         map.setMinScale(22222225.0);
         mapView.setMap(map);
+        //location
+        mLocationDisplay = mapView.getLocationDisplay();
         routeGraphicsOverlay = new GraphicsOverlay();
         mapView.getGraphicsOverlays().add(routeGraphicsOverlay);
         mapView.setOnTouchListener(new OnSingleTouchListener(getContext(), mapView));
@@ -344,7 +350,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
         }
         // Perform the recentering
         if (points.size() == 1) {
-            mapView.setViewpointCenterAsync(points.get(0), 5000);
+            mapView.setViewpointCenterAsync(points.get(0), 2000);
+//          mapView.setViewpointAsync(new Viewpoint(points.get(0), 5000), 1);
         } else if (points.size() > 1) {
             PointCollection pointCollection = new PointCollection(points);
             Polygon polygon = new Polygon(pointCollection);
@@ -363,6 +370,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //            myGraphicOverlay = pinGraphicOverlay2;
 //        }
         mapView.getGraphicsOverlays().remove(pinGraphicOverlay);
+//        mapView.getGraphicsOverlays().remove(locationOverlay);
         pinGraphicOverlay = new GraphicsOverlay();
 
         //add the overlay to the map view
@@ -443,44 +451,48 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     }
 
     public void addCurrentLocation(ReadableArray args) {
-        final ArrayList<Point> points = new ArrayList<>();
-        locationOverlay = new GraphicsOverlay();
-        mapView.getGraphicsOverlays().add(locationOverlay);
-        BitmapDrawable locationPin = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.location);
+        //location
+        mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+        if (!mLocationDisplay.isStarted())
+            mLocationDisplay.startAsync();
+//        final ArrayList<Point> points = new ArrayList<>();
+//        locationOverlay = new GraphicsOverlay();
+//        mapView.getGraphicsOverlays().add(locationOverlay);
+//        BitmapDrawable locationPin = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.location);
 
 //        Double latitude, longitude;
-        for (int i = 0; i < args.size(); i++) {
-            final PictureMarkerSymbol locationPinSymbol;
-            ReadableMap item = args.getMap(i);
-            if (item == null) {
-                continue;
-            }
-            Double latitude = item.getDouble("latitude");
-            Double longitude = item.getDouble("longitude");
-            try {
-                locationPinSymbol = PictureMarkerSymbol.createAsync(locationPin).get();
-                locationPinSymbol.loadAsync();
-                locationPinSymbol.setOffsetY(20);
-                locationPinSymbol.setWidth(26);
-                locationPinSymbol.setHeight(26);
-
-                locationPinSymbol.addDoneLoadingListener(new Runnable() {
-                    @Override
-                    public void run() {
-                        Point mSourcePoint = new Point(longitude, latitude, SpatialReferences.getWgs84());
-                        Graphic pinSourceGraphic = new Graphic(mSourcePoint, locationPinSymbol);
-                        locationOverlay.getGraphics().add(pinSourceGraphic);
-                    }
-                });
-
-            } catch (InterruptedException e) {
-                Log.d(TAG, "setupSymbols: error 1"+e.getMessage());
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                Log.d(TAG, "setupSymbols: error 2"+e.getMessage());
-                e.printStackTrace();
-            }
-        }
+//        for (int i = 0; i < args.size(); i++) {
+//            final PictureMarkerSymbol locationPinSymbol;
+//            ReadableMap item = args.getMap(i);
+//            if (item == null) {
+//                continue;
+//            }
+//            Double latitude = item.getDouble("latitude");
+//            Double longitude = item.getDouble("longitude");
+//            try {
+//                locationPinSymbol = PictureMarkerSymbol.createAsync(locationPin).get();
+//                locationPinSymbol.loadAsync();
+//                locationPinSymbol.setOffsetY(20);
+//                locationPinSymbol.setWidth(26);
+//                locationPinSymbol.setHeight(26);
+//
+//                locationPinSymbol.addDoneLoadingListener(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Point mSourcePoint = new Point(longitude, latitude, SpatialReferences.getWgs84());
+//                        Graphic pinSourceGraphic = new Graphic(mSourcePoint, locationPinSymbol);
+//                        locationOverlay.getGraphics().add(pinSourceGraphic);
+//                    }
+//                });
+//
+//            } catch (InterruptedException e) {
+//                Log.d(TAG, "setupSymbols: error 1"+e.getMessage());
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                Log.d(TAG, "setupSymbols: error 2"+e.getMessage());
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     // Layer add/remove
@@ -499,32 +511,14 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 //            mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
             rnGraphicsOverlays.remove(removalId);
             mapView.getGraphicsOverlays().remove(pinGraphicOverlay);
-            mapView.getGraphicsOverlays().remove(locationOverlay);
-//            mapView.getGraphicsOverlays().remove(pinGraphicOverlay2);
-            // routeGraphicsOverlay.getGraphics().remove(mGraphic);
-            // routeGraphicsOverlay.getGraphics().remove(lineGraphic);
+            if (mLocationDisplay.isStarted())
+                mLocationDisplay.stop();
+//            mapView.getGraphicsOverlays().remove(locationOverlay);
         } else {
             routeGraphicsOverlay.getGraphics().remove(mGraphic);
             routeGraphicsOverlay.getGraphics().remove(lineGraphic);
         }
     }
-
-//    public void removeGraphicsOverlay(String removalId) {
-//        if(removalId.length() > 0) {
-//            RNAGSGraphicsOverlay overlay = rnGraphicsOverlays.get(removalId);
-//            if (overlay == null) {
-//                Log.w("Warning (AGS)", "No overlay with the associated ID was found.");
-//                return;
-//            }
-//            mapView.getGraphicsOverlays().remove(overlay.getAGSGraphicsOverlay());
-//            rnGraphicsOverlays.remove(removalId);
-//            // routeGraphicsOverlay.getGraphics().remove(mGraphic);
-//            // routeGraphicsOverlay.getGraphics().remove(lineGraphic);
-//        } else {
-//            routeGraphicsOverlay.getGraphics().remove(mGraphic);
-//            routeGraphicsOverlay.getGraphics().remove(lineGraphic);
-//        }
-//    }
 
     // Point updates
     public void updatePointsInGraphicsOverlay(ReadableMap args) {
