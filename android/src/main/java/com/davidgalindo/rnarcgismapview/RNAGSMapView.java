@@ -148,9 +148,10 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                                 LinearUnit linearUnit = new LinearUnit(LinearUnitId.KILOMETERS);
                                 double length = GeometryEngine.lengthGeodetic(wgs84Point1, linearUnit, GeodeticCurveType.SHAPE_PRESERVING);
                                 Log.d(TAG, "length: "+length);
-                                String jsonStr1 = wgs84Point1.toJson();
+                                Polygon mPolygon = GeometryEngine.bufferGeodetic(wgs84Point1,20, new LinearUnit(LinearUnitId.METERS),1.0,GeodeticCurveType.SHAPE_PRESERVING);
+                                String jsonStr1 = mPolygon.toJson();
                                 JSONObject obj1 = new JSONObject(jsonStr1);
-                                JSONArray jsonArr1 = new JSONArray(obj1.getString("paths"));
+                                JSONArray jsonArr1 = new JSONArray(obj1.getString("rings"));
                                 WritableMap map1 = Arguments.createMap();
                                 map1.putBoolean("success", false);
                                 map1.putString("response", jsonArr1.toString());
