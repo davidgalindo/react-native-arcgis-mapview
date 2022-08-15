@@ -14,6 +14,7 @@
 RCT_EXPORT_VIEW_PROPERTY(basemapUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(routeUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(initialMapCenter, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(maximumResult, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(recenterIfGraphicTapped, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(minZoom, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(maxZoom, NSNumber)
@@ -39,6 +40,8 @@ RCT_EXTERN_METHOD(routeIsShowing:(nonnull NSNumber*) node callback: (RCTResponse
 RCT_EXTERN_METHOD(setRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
 RCT_EXTERN_METHOD(getRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
 RCT_EXTERN_METHOD(setLicenseKey:(nonnull NSString*)key)
+RCT_EXTERN_METHOD(setApiKey:(nonnull NSString*)key)
+
 
 RCT_EXTERN_METHOD(dispose:(nonnull NSNumber*) node)
 @end

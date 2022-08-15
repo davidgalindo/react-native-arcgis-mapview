@@ -1,7 +1,7 @@
 //  Created by react-native-create-bridge
 
 import React from 'react'
-import { NativeEventEmitter, Platform, requireNativeComponent, NativeModules,  UIManager, findNodeHandle, DeviceEventEmitter } from 'react-native'
+import { NativeEventEmitter, Platform, requireNativeComponent, NativeModules, UIManager, findNodeHandle, DeviceEventEmitter } from 'react-native'
 import PropTypes from 'prop-types'
 const AGSMap = requireNativeComponent('RNArcGISMapView', ArcGISMapView);
 
@@ -17,7 +17,7 @@ class ArcGISMapView extends React.Component {
     }
     eventEmitter.addListener('isRoutingChanged', this.props.onRoutingStatusUpdate);
   }
-  
+
   // MARK: Props
   static propTypes = {
     basemapUrl: PropTypes.string,
@@ -27,16 +27,18 @@ class ArcGISMapView extends React.Component {
     rotationEnabled: PropTypes.bool,
     routeUrl: PropTypes.string,
     onOverlayWasAdded: PropTypes.func,
-    onOverlayWasRemoved:  PropTypes.func,
+    onOverlayWasRemoved: PropTypes.func,
     onOverlayWasModified: PropTypes.func,
     onMapDidLoad: PropTypes.func,
     onMapMoved: PropTypes.func,
     onSingleTap: PropTypes.func,
+    maximumResult: PropTypes.number,
+    enableCurrentLocation: PropTypes.bool
   };
 
   static defaultProps = {
     initialMapCenter: [
-      {latitude: 36.244797, longitude: -94.148060}
+      { latitude: 36.244797, longitude: -94.148060 }
     ],
     minZoom: 0,
     maxZoom: 0,
@@ -44,12 +46,13 @@ class ArcGISMapView extends React.Component {
     basemapUrl: '',
     onSingleTap: () => { },
     onOverlayWasAdded: () => { },
-    onOverlayWasRemoved:  () => { },
+    onOverlayWasRemoved: () => { },
     onOverlayWasModified: () => { },
     onMapDidLoad: () => { },
     onMapMoved: () => { },
     onRoutingStatusUpdate: () => { },
     routeUrl: '',
+    enableCurrentLocation: true,
   };
 
   isRouting = false;
@@ -150,16 +153,16 @@ class ArcGISMapView extends React.Component {
       [args]
     );
   }
-  
+
   getRouteIsVisible = (callback) => {
-    if (Platform.OS === 'ios') { 
+    if (Platform.OS === 'ios') {
       UIManager.dispatchViewManagerCommand(
         findNodeHandle(this.agsMapRef),
         UIManager.getViewManagerConfig('RNArcGISMapView').Commands.getRouteIsVisibleViaManager,
         [callback]
       );
     } else {
-      NativeModules.RNArcGISMapViewManager.getRouteIsVisible(findNodeHandle(this.agsMapRef),callback);
+      NativeModules.RNArcGISMapViewManager.getRouteIsVisible(findNodeHandle(this.agsMapRef), callback);
     }
   };
 
@@ -172,7 +175,7 @@ class ArcGISMapView extends React.Component {
   }
 
   // MARK: Render
-  render () {
+  render() {
     return <AGSMap {...this.props} ref={e => this.agsMapRef = e} />
   }
 
@@ -189,6 +192,10 @@ class ArcGISMapView extends React.Component {
 export const setLicenseKey = (string) => {
   NativeModules.RNArcGISMapViewManager.setLicenseKey(string);
 };
+
+export const setApiKey = (string) => {
+  NativeModules.RNArcGISMapViewManager.setApiKey(string);
+}
 
 
 export default ArcGISMapView;
