@@ -51,7 +51,6 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
             self.locationDisplay.autoPanMode = .off
 
         }
-
         startProcessingLocationChanges()
     }
 
@@ -66,6 +65,13 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         private func processLocationUpdate() {
         guard let position = self.locationDisplay.mapLocation, position.x != 0, position.y != 0 else { return }
         //position
+            var reactResult: [AnyHashable: Any] = [
+                "mapPoint": ["lat" : position.y, "lng": position.x],
+            ]
+
+             if onLocationChanged != nil {
+          self.onLocationChanged!(reactResult)
+             }
           print( "location device changed  : \(position)" )
     }
 
@@ -114,39 +120,18 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         }
     }
 
-  private func synchronizeViewpoints(to sender: AGSGeoView) {
-        // Check that the user is actively navigating this view, since viewpoint
-        // change events are also called on `setViewpoint(_:)`. This check prevents
-        // a feedback loop.
-               print( "4444444444" )
-    }
 
     public func geoView(_ geoView: AGSGeoView, didTouchDragToScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
-         print("11. didTouchDragToScreenPoint")
-        // if let onMapMoved = onMapMoved {
-        //     let reactResult: [AnyHashable: Any] = [
-        //         "mapPoint" : ["latitude" : mapPoint.y, "longitude": mapPoint.x],
-        //         "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
-        //     ]
-        // onMapMoved(reactResult)
-        // }
+        if let onMapMoved = onMapMoved {
+            let reactResult: [AnyHashable: Any] = [
+                "mapPoint" : ["latitude" : mapPoint.y, "longitude": mapPoint.x],
+                "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
+            ]
+        onMapMoved(reactResult)
+        }
 
-        self.synchronizeViewpoints(to:geoView)
     }
-    public func geoView(_ geoView: AGSGeoView, didTouchDownAtScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint, completion: @escaping (Bool) -> Void) {
-        // tell the ArcGIS Runtime if we are going to handle interaction
-    // canMoveViewshed ? completion(true) : completion(false)
 
-            guard geoView.isNavigating else{
-            /// The viewpoint of the view currently being navigated.
-
-                  print( "iiwwwwwwwwwwwww is : \(geoView.isNavigating )" )
-            completion(false)
-            return
-            }
-        print( "qqweweqeqwe is : \(geoView.isNavigating )" )
-        completion(true)
-    }
 
 
     // MARK: Exposed RN Event Emitters
@@ -156,7 +141,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     @objc var onOverlayWasAdded: RCTDirectEventBlock?
     @objc var onOverlayWasRemoved: RCTDirectEventBlock?
     @objc var onMapMoved: RCTDirectEventBlock?
-
+    @objc var onLocationChanged:RCTDirectEventBlock?
     // MARK: Exposed RN methods
     @objc func showCallout(_ args: NSDictionary) {
         let point = args["point"] as? NSDictionary

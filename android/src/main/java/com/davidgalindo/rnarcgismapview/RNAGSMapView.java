@@ -22,6 +22,7 @@ import com.esri.arcgisruntime.geometry.PointCollection;
 import com.esri.arcgisruntime.geometry.Polygon;
 import com.esri.arcgisruntime.geometry.Polyline;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.location.LocationDataSource;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -58,6 +59,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     // MARK: Variables/Prop declarations
     private final String TAG = RNAGSMapView.class.getSimpleName();
     View rootView;
+    private Point position;
     public MapView mapView;
     String basemapUrl = "";
     String routeUrl = "";
@@ -102,6 +104,8 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     }
 
+
+
     @SuppressLint("ClickableViewAccessibility")
     public void setUpMap() {
         mapView.setMap(new ArcGISMap(Basemap.Type.STREETS_VECTOR, 34.057, -117.196, 17));
@@ -129,11 +133,23 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
           // enable dragging of the identified graphic to move its location
         }
         });
+      mLocationDisplay.addLocationChangedListener(locationListener());
     }
-    public boolean handleDragEvent(DragEvent e){
-      Log.d(TAG, "onMapDidLoad success");
-          return true;
-    }
+  private  LocationDisplay.LocationChangedListener  locationListener () {
+    LocationDisplay.LocationChangedListener locationChangedListener =
+      (LocationDisplay.LocationChangedEvent locationChangedEvent) -> {
+
+        position = locationChangedEvent.getLocation().getPosition();
+        WritableMap screenPointMap = Arguments.createMap();
+        screenPointMap.putDouble("lng",position.getX());
+        screenPointMap.putDouble("lat",position.getY());
+
+        emitEvent("onLocationChanged",screenPointMap);
+        //add event
+      };
+    return locationChangedListener;
+  }
+
     // MARK: Prop set methods
     public void setBasemapUrl(String url) {
         basemapUrl = url;
@@ -532,6 +548,7 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
 
     @Override
     public void onHostDestroy() {
+        mLocationDisplay.removeLocationChangedListener(locationListener());
         mapView.dispose();
         if (getContext() instanceof ReactContext) {
             ((ReactContext) getContext()).removeLifecycleEventListener(this);
