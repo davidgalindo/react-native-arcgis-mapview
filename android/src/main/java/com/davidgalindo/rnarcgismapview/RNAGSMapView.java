@@ -210,8 +210,9 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
     GraphicsOverlay graphicsOverlay = new GraphicsOverlay();
     mapView.getGraphicsOverlays().add(graphicsOverlay);
 
-    SimpleLineSymbol blueOutlineSymbol =
-      new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, 0xFF0063FF, 1);
+    int colorStroke =  Color.parseColor("#B71D21");
+    SimpleLineSymbol blueOutlineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID,colorStroke, 1);
+
     Polygon polygon = new Polygon(new PointCollection(points));
 
  // create an orange fill symbol with 20% transparency and the blue simple line symbol
