@@ -111,6 +111,15 @@ public class RNArcGISMapViewManager: RCTViewManager {
             print("error: \(error)")
         }
     }
+    // @objc func setApiKey(_ key: String) {
+    //     do {
+    //        print("start setApiKey")
+    //         try AGSArcGISRuntimeEnvironment.apiKey=key
+    //     }
+    //     catch let error as NSError {
+    //         print("error key: \(error)")
+    //     }
+    // }
 }
 
 @objc(RNArcGISMapViewModule)

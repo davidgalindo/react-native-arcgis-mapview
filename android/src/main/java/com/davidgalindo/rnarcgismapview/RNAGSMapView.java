@@ -506,8 +506,11 @@ public class RNAGSMapView extends LinearLayout implements LifecycleEventListener
                         // More null checking >.>
                         if (!graphicResult.isEmpty()) {
                              for(Graphic result : graphicResult) {
-                                  String atribute=result.getAttributes().get("referenceId").toString();
-                                  listAtribute.add(atribute);
+                                  Object atribute=result.getAttributes().get("referenceId");
+                                  if(atribute!=null){
+                                    String atributeString=atribute.toString();
+                                    listAtribute.add(atributeString);
+                                  }
                              }
 
                             Graphic firstResult = graphicResult.get(0);

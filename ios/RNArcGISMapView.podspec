@@ -24,5 +24,5 @@ Pod::Spec.new do |s|
   s.swift_version = '4.2'
 
   s.dependency 'React'
-  s.dependency 'ArcGIS-Runtime-SDK-iOS', '100.4'
+  s.dependency 'ArcGIS-Runtime-SDK-iOS', '100.5'
 end
