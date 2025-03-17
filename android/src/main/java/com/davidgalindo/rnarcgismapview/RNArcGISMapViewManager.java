@@ -1,9 +1,10 @@
 package com.davidgalindo.rnarcgismapview;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -22,7 +23,9 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     private final int UPDATE_POINTS_IN_GRAPHICS_OVERLAY = 7;
     private final int ROUTE_GRAPHICS_OVERLAY = 8;
     private final int SET_ROUTE_IS_VISIBLE = 9;
-    private final int DISPOSE = 999;
+    private final int RE_LOAD_MAP = 10;
+
+  private final int DISPOSE = 999;
 
     // MARK Initializing methods
     @Override
@@ -51,13 +54,29 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     }
 
     @ReactProp(name = "initialMapCenter")
-    public void setInitialMapCenter(RNAGSMapView view, @Nullable ReadableArray array) {
-        view.setInitialMapCenter(array);
+    public void setInitialMapCenter(RNAGSMapView view, @Nullable ReadableMap array) {
+      ReadableArray listPoint=array.getArray("points");
+      Integer stroke=1;
+      Double scale=0.5;
+      if(
+       array.hasKey("stroke")
+      ){
+        stroke=array.getInt("stroke");
+     }
+     if( array.hasKey("mapScale")) {
+       scale = array.getDouble("mapScale");
+     }
+      view.setInitialMapCenter(listPoint,stroke,scale);
     }
 
     @ReactProp(name = "recenterIfGraphicTapped", defaultBoolean = false)
     public void setRecenterIfGraphicTapped(RNAGSMapView view, Boolean value){
         view.setRecenterIfGraphicTapped(value);
+    }
+
+        @ReactProp(name = "maximumResult",defaultInt=1)
+    public void setValueMaximumResult(RNAGSMapView view, Integer value){
+        view.setValueMaximumResult(value);
     }
 
     @ReactProp(name= "minZoom")
@@ -92,7 +111,9 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
         map.put("routeGraphicsOverlayViaManager",ROUTE_GRAPHICS_OVERLAY);
         map.put("setRouteIsVisible", SET_ROUTE_IS_VISIBLE);
         map.put("dispose", DISPOSE);
-        return map;
+        map.put("reloadMap", RE_LOAD_MAP);
+
+      return map;
     }
 
     @Override
@@ -109,6 +130,7 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
             case UPDATE_POINTS_IN_GRAPHICS_OVERLAY: mapView.updatePointsInGraphicsOverlay(args.getMap(0));return;
             case ROUTE_GRAPHICS_OVERLAY: mapView.routeGraphicsOverlay(args.getMap(0));return;
             case SET_ROUTE_IS_VISIBLE: mapView.setRouteIsVisible(args.getBoolean(0));return;
+            case RE_LOAD_MAP:mapView.reLoadMap();return;
             case DISPOSE: mapView.onHostDestroy();
         }
     }
@@ -116,6 +138,11 @@ public class RNArcGISMapViewManager extends SimpleViewManager<RNAGSMapView> {
     // MARK: Event receiving
     public Map getExportedCustomBubblingEventTypeConstants() {
         return MapBuilder.builder()
+                        .put(
+                        "onLocationChanged",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onLocationChanged")))
                 .put(
                         "onSingleTap",
                         MapBuilder.of(

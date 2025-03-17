@@ -13,12 +13,14 @@
 @interface RCT_EXTERN_MODULE(RNArcGISMapViewManager, RCTViewManager)
 RCT_EXPORT_VIEW_PROPERTY(basemapUrl, NSString)
 RCT_EXPORT_VIEW_PROPERTY(routeUrl, NSString)
-RCT_EXPORT_VIEW_PROPERTY(initialMapCenter, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(initialMapCenter, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(maximumResult, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(recenterIfGraphicTapped, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(minZoom, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(maxZoom, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(rotationEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onSingleTap, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLocationChanged, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMapDidLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onOverlayWasModified, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onOverlayWasAdded, RCTDirectEventBlock)
@@ -39,8 +41,12 @@ RCT_EXTERN_METHOD(routeIsShowing:(nonnull NSNumber*) node callback: (RCTResponse
 RCT_EXTERN_METHOD(setRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
 RCT_EXTERN_METHOD(getRouteIsVisibleViaManager:(nonnull NSNumber*) node args:(BOOL*) args)
 RCT_EXTERN_METHOD(setLicenseKey:(nonnull NSString*)key)
+RCT_EXTERN_METHOD(setApiKey:(nonnull NSString*)key)
+
 
 RCT_EXTERN_METHOD(dispose:(nonnull NSNumber*) node)
+
+RCT_EXTERN_METHOD(reloadMap:(nonnull NSNumber*) node)
 @end
 
 @interface RCT_EXTERN_MODULE(RNArcGISMapViewModule, RCTEventEmitter)

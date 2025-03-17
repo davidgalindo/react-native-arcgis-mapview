@@ -1,8 +1,7 @@
 package com.davidgalindo.rnarcgismapview;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PointCollection;
@@ -25,6 +24,9 @@ public class RNAGSGraphicsOverlay {
     private HashMap<String, String> pointImageDictionary;
     private String referenceId;
     private Boolean shouldAnimateUpdate = false;
+    volatile boolean running = true;
+    private static Runnable addGraphicRunnable;
+    private static Thread addGraphicThread;
 
     public RNAGSGraphicsOverlay(ReadableMap rawData, GraphicsOverlay graphicsOverlay) {
         this.referenceId = rawData.getString("referenceId");
@@ -40,12 +42,20 @@ public class RNAGSGraphicsOverlay {
                 pointImageDictionary.put(graphicId, uri);
             }
         }
-        // Create graphics within overlay
         ReadableArray rawPoints = rawData.getArray("points");
         for (int i = 0; i < rawPoints.size(); i++) {
-            addGraphicsLoop(rawPoints.getMap(i));
-
+        //force sleep each 50 time to prevent performance when back to previous screen while add graphic
+        addGraphicsLoop(rawPoints.getMap(i));
         }
+    }
+
+
+    public void stopThread(){
+      try{
+        addGraphicRunnable.wait(100);
+      } catch (Exception e) {
+      }
+      running=false;
     }
 
     // Getters
@@ -62,9 +72,28 @@ public class RNAGSGraphicsOverlay {
     }
 
     public void updateGraphics(ReadableArray args) {
-        for (int i = 0; i < args.size(); i++) {
-            updateGraphicLoop(args.getMap(i));
-        }
+//       Create graphics within overlay
+         addGraphicRunnable=new Runnable() {
+           public void run() {
+           try {
+               for (int i = 0; i < args.size(); i++) {
+                 if(!running) {
+                   break;
+               }
+                 updateGraphicLoop(args.getMap(i));
+               }
+               addGraphicRunnable.wait(100);
+               cancel();
+           } catch (Exception e) {
+           }
+
+           }
+           public void cancel() {
+           running=false;
+       }
+       };
+       addGraphicThread=new Thread(addGraphicRunnable);
+       addGraphicThread.start();
     }
 
     private void updateGraphicLoop(ReadableMap args) {
@@ -86,9 +115,9 @@ public class RNAGSGraphicsOverlay {
             graphic.getAttributes().putAll(attributes);
 
         }
-        if (args.hasKey("graphicsId")) {
-            String graphicsId = args.getString("graphicsId");
-            String graphicUri = pointImageDictionary.get(graphicsId);
+        if (args.hasKey("graphicId")) {
+            String graphicId = args.getString("graphicId");
+            String graphicUri = pointImageDictionary.get(graphicId);
             if (graphicUri != null) {
                 PictureMarkerSymbol symbol = new PictureMarkerSymbol(graphicUri);
                 graphic.setSymbol(symbol);
@@ -101,6 +130,10 @@ public class RNAGSGraphicsOverlay {
         }
         if (args.hasKey("rotation")) {
             rotation = args.getDouble("rotation");
+        }
+        if(args.hasKey("zIndex")){
+          Integer zIndex=args.getInt("zIndex");
+          graphic.setZIndex(zIndex);
         }
         if (shouldAnimateUpdate) {
             Float initialRotation = (graphic.getSymbol() != null && graphic.getSymbol() instanceof PictureMarkerSymbol) ?
@@ -157,14 +190,20 @@ public class RNAGSGraphicsOverlay {
     }
 
     public void addGraphics(ReadableArray args) {
-        for (int i = 0; i < args.size(); i++) {
-            addGraphicsLoop(args.getMap(i));
+      for (int i = 0; i < args.size(); i++) {
+        addGraphicsLoop(args.getMap(i));
         }
+
+
     }
 
     private void addGraphicsLoop(ReadableMap map) {
         Point point = Point.fromRawData(map);
         Graphic graphic = RNAGSGraphicsOverlay.rnPointToAGSGraphic(point, pointImageDictionary);
+      if(map.hasKey("zIndex")){
+        Integer zIndex=map.getInt("zIndex");
+        graphic.setZIndex(zIndex);
+      }
         graphicsOverlay.getGraphics().add(graphic);
     }
 
@@ -252,8 +291,8 @@ public class RNAGSGraphicsOverlay {
             );
         }
 
-        private Point(@NonNull Double latitude, @NonNull Double longitude, @NonNull Double rotation, @NonNull String referenceId,
-                      @Nullable Map<String, Object> attributes, @Nullable String graphicId) {
+        private Point( Double latitude, Double longitude,  Double rotation, String referenceId,
+                      Map<String, Object> attributes, String graphicId) {
             this.latitude = latitude;
             this.longitude = longitude;
             this.rotation = rotation;

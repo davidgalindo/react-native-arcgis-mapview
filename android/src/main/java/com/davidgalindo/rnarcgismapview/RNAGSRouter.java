@@ -1,8 +1,6 @@
 package com.davidgalindo.rnarcgismapview;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
@@ -42,7 +40,7 @@ public class RNAGSRouter {
         });
     }
 
-    public ListenableFuture<RouteResult> createRoute(@NonNull GraphicsOverlay graphicsOverlay, @Nullable ArrayList<String> excludeGraphics) {
+    public ListenableFuture<RouteResult> createRoute(GraphicsOverlay graphicsOverlay,ArrayList<String> excludeGraphics) {
         // Clear stops
         if (routeParameters == null) {
             Log.w("WARNING (AGS)", "It looks like the Esri Routing service is down, or you did not provide valid credentials. Please try again later, or submit an issue.");

@@ -34,5 +34,11 @@ public class RNArcGISMapViewModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setLicenseKey(String licenseKey) {
         ArcGISRuntimeEnvironment.setLicense(licenseKey);
+
+    }
+
+        @ReactMethod
+    public void setApiKey(String apiKey) {
+           ArcGISRuntimeEnvironment.setApiKey(apiKey);
     }
 }
