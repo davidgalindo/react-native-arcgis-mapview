@@ -1,3 +1,5 @@
+# This project is no longer actively being maintained. Use/fork at your own risk. 
+# If you wish to take over this project, please create a fork with proof of maintenance, tag me, and I will point this repo to yours.
 
 # React Native ArcGIS MapView
 A basic port of ArcGIS for React Native. Handles basemap URLs, map recentering, Callout views (iOS only for now), drawing/moving/updating graphics onto the map, routing, and single tap listeners.
